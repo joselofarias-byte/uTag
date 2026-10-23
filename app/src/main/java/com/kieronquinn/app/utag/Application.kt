@@ -51,6 +51,8 @@ import com.kieronquinn.app.utag.repositories.DownloadRepository
 import com.kieronquinn.app.utag.repositories.DownloadRepositoryImpl
 import com.kieronquinn.app.utag.repositories.EncryptedSettingsRepository
 import com.kieronquinn.app.utag.repositories.EncryptedSettingsRepositoryImpl
+import com.kieronquinn.app.utag.repositories.FindCatalogRepository
+import com.kieronquinn.app.utag.repositories.FindCatalogRepositoryImpl
 import com.kieronquinn.app.utag.repositories.EncryptionRepository
 import com.kieronquinn.app.utag.repositories.EncryptionRepositoryImpl
 import com.kieronquinn.app.utag.repositories.FindMyDeviceRepository
@@ -130,6 +132,8 @@ import com.kieronquinn.app.utag.ui.screens.settings.contentcreator.SettingsConte
 import com.kieronquinn.app.utag.ui.screens.settings.contentcreator.SettingsContentCreatorViewModelImpl
 import com.kieronquinn.app.utag.ui.screens.settings.encryption.SettingsEncryptionViewModel
 import com.kieronquinn.app.utag.ui.screens.settings.encryption.SettingsEncryptionViewModelImpl
+import com.kieronquinn.app.utag.ui.screens.settings.findcatalog.FindCatalogViewModel
+import com.kieronquinn.app.utag.ui.screens.settings.findcatalog.FindCatalogViewModelImpl
 import com.kieronquinn.app.utag.ui.screens.settings.encryption.confirm.SettingsEncryptionConfirmPINViewModel
 import com.kieronquinn.app.utag.ui.screens.settings.encryption.confirm.SettingsEncryptionConfirmPINViewModelImpl
 import com.kieronquinn.app.utag.ui.screens.settings.encryption.pintimeout.PinTimeoutViewModel
@@ -326,6 +330,7 @@ class Application: Application(), LifecycleEventObserver {
         single<UwbRepository> { UwbRepository.getImplementation(get()) }
         single<NotificationRepository> { NotificationRepositoryImpl(get(), get()) }
         single<FindMyDeviceRepository> { FindMyDeviceRepositoryImpl(get(), get(), get(), get()) }
+        single<FindCatalogRepository> { FindCatalogRepositoryImpl(get(), get()) }
         single<RulesRepository> { RulesRepositoryImpl(get(), get(), get()) }
         single<AutomationRepository> { AutomationRepositoryImpl(get(), get(), get(), get()) }
         single<SafeAreaRepository> {
@@ -435,6 +440,7 @@ class Application: Application(), LifecycleEventObserver {
         }
         viewModel<SettingsSecurityViewModel> { SettingsSecurityViewModelImpl(get(), get(), get(), get()) }
         viewModel<SettingsMapViewModel> { SettingsMapViewModelImpl(get(), get(), get()) }
+        viewModel<FindCatalogViewModel> { FindCatalogViewModelImpl(get(), get()) }
         viewModel<SettingsLocationViewModel> { SettingsLocationViewModelImpl(
             get(),
             get(),

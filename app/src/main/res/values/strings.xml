@@ -114,6 +114,8 @@
     <string name="settings_main_faq_content">Questions and answers about uTag</string>
     <string name="settings_main_wiki_title">View the Wiki</string>
     <string name="settings_main_wiki_content">Info &amp; guides on how to use uTag</string>
+    <string name="settings_main_find_catalog_title">Items and people (experimental)</string>
+    <string name="settings_main_find_catalog_content">List devices and people already returned by Find. Only SmartTags can be located.</string>
     <string name="settings_main_backup_restore_title">Backup &amp; Restore</string>
     <string name="settings_main_backup_restore_content">Backup &amp; restore uTag data to a local file or the cloud</string>
     <string name="settings_main_advanced_title">Advanced</string>
@@ -1153,6 +1155,49 @@
     <string name="updates_category_options">Options</string>
     <string name="updates_check_for_updates_title">Automatically Check for Updates</string>
     <string name="updates_check_for_updates_content">Automatically check for updates once a day and show a notification if any are available</string>
+
+    <!-- Experimental Find catalog: items and people from the existing device list -->
+    <string name="find_catalog_title">Items and people</string>
+    <string name="find_catalog_experimental_title">What this screen can and cannot do</string>
+    <string name="find_catalog_intro">Samsung Find has Devices, Items and People tabs. This version of uTag only calls the Find My Mobile list that the favourites screen already uses (GET /devices through the SmartThings plugin). SmartTags in that list can be located with the same tracker geolocation call as the map. Phones, watches, buds and people are shown only when that response includes them. Their live location, ringing and sharing are not requested: those calls are not in this app. The uTag author is building them in an unreleased rewrite, and the project wiki says the rest of the Find API is still undocumented.</string>
+    <string name="find_catalog_experimental_switch">Enable experimental device list</string>
+    <string name="find_catalog_experimental_summary">Off until you turn it on. Turning it on reads the account\'s existing Find device list. It does not add a Buds, Watch or person to the network.</string>
+    <string name="find_catalog_error_title">Could not read the list</string>
+    <string name="find_catalog_error">GET /devices failed. Check the connection and that you are signed in. Nothing was invented in its place.</string>
+    <string name="find_catalog_summary_title">From GET /devices</string>
+    <string name="find_catalog_counts">%1$d tags · %2$d FMM devices · %3$d people · %4$d other</string>
+    <string name="find_catalog_counts_summary">FMM devices are whatever this response calls a non-tag, often a phone. A watch only appears if Samsung put it in this list. People are the members array: a name, not a live location.</string>
+    <string name="find_catalog_refresh">Refresh SmartTag locations</string>
+    <string name="find_catalog_refresh_summary">Asks the existing tracker endpoint for %1$d tag(s). Other rows are left alone.</string>
+    <string name="find_catalog_refresh_none">There is no SmartTag id in this list, so no location request will be sent.</string>
+    <string name="find_catalog_refresh_running">Requesting tag locations…</string>
+    <string name="find_catalog_kind_tags">SmartTags</string>
+    <string name="find_catalog_kind_devices">Other FMM devices</string>
+    <string name="find_catalog_kind_accounts">Shared accounts</string>
+    <string name="find_catalog_kind_people">People</string>
+    <string name="find_catalog_kind_unknown">Unclassified</string>
+    <string name="find_catalog_unnamed_tag">SmartTag</string>
+    <string name="find_catalog_unnamed_device">Samsung device</string>
+    <string name="find_catalog_unnamed_account">Shared account</string>
+    <string name="find_catalog_unnamed_person">Person</string>
+    <string name="find_catalog_unnamed_unknown">Unknown device</string>
+    <string name="find_catalog_location_type">locationType %1$s</string>
+    <string name="find_catalog_can_locate">Location can be requested with the SmartTag endpoint.</string>
+    <string name="find_catalog_tag_missing_id">Marked as a tracker, but the response has no SmartThings device id, so location was not requested.</string>
+    <string name="find_catalog_person_only">Member of this Find install. The response has a name only. Live people sharing is not implemented.</string>
+    <string name="find_catalog_not_located">Listed from the device response. This build does not call a location endpoint for this kind of row.</string>
+    <string name="find_catalog_fmm_id">fmmDevId %1$s</string>
+    <string name="find_catalog_share">shareGeolocation %1$s</string>
+    <string name="find_catalog_agreement">mutualAgreement %1$s</string>
+    <string name="find_catalog_yes">yes</string>
+    <string name="find_catalog_no">no</string>
+    <string name="find_catalog_located">Last tag fix %1$.5f, %2$.5f at %3$s (%4$s)</string>
+    <string name="find_catalog_cached">cached</string>
+    <string name="find_catalog_live">from the network</string>
+    <string name="find_catalog_reason_none">The tag endpoint returned no location.</string>
+    <string name="find_catalog_reason_pin">The tag location is encrypted and needs the PIN.</string>
+    <string name="find_catalog_reason_denied">This account is not allowed to read that tag location.</string>
+    <string name="find_catalog_reason_error">The tag location request failed.</string>
 
     <!-- Debug notification -->
     <string name="debug_error_notification_title">uTag Error Caught</string>

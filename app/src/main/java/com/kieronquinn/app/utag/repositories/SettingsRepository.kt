@@ -99,6 +99,13 @@ interface SettingsRepository: BaseSettingsRepository {
     val hasSeenFindMyDeviceWarning: UTagSetting<Boolean>
 
     /**
+     *  Experimental list of non-tag rows already returned by FMM GET /devices.
+     *  Off until the user opts in. Does not call undocumented Find tab APIs.
+     */
+    @IgnoreInBackup
+    val findCatalogExperimentalEnabled: UTagSetting<Boolean>
+
+    /**
      *  Whether the user has seen the Automation shared tag warning, which is only displayed once.
      */
     @IgnoreInBackup
@@ -193,6 +200,9 @@ class SettingsRepositoryImpl(context: Context): BaseSettingsRepositoryImpl(), Se
         private const val KEY_HAS_SEEN_FIND_MY_DEVICE_WARNING = "has_seen_find_my_device_warning"
         private const val DEFAULT_HAS_SEEN_FIND_MY_DEVICE_WARNING = false
 
+        private const val KEY_FIND_CATALOG_EXPERIMENTAL = "find_catalog_experimental"
+        private const val DEFAULT_FIND_CATALOG_EXPERIMENTAL = false
+
         private const val KEY_HAS_SEEN_AUTOMATION_WARNING = "has_seen_automation_warning"
         private const val DEFAULT_HAS_SEEN_AUTOMATION_WARNING = false
 
@@ -255,6 +265,11 @@ class SettingsRepositoryImpl(context: Context): BaseSettingsRepositoryImpl(), Se
     override val hasSeenFindMyDeviceWarning = boolean(
         KEY_HAS_SEEN_FIND_MY_DEVICE_WARNING,
         DEFAULT_HAS_SEEN_FIND_MY_DEVICE_WARNING
+    )
+
+    override val findCatalogExperimentalEnabled = boolean(
+        KEY_FIND_CATALOG_EXPERIMENTAL,
+        DEFAULT_FIND_CATALOG_EXPERIMENTAL
     )
 
     override val hasSeenAutomationWarning = boolean(
