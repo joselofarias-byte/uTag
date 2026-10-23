@@ -184,7 +184,6 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
     ksp(libs.room.compiler)
-    testImplementation("junit:junit:4.13.2")
     implementation(project(":xposed-core"))
     implementation(project(":uwb"))
     testImplementation("junit:junit:4.13.2")
