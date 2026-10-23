@@ -186,6 +186,17 @@ class SettingsMainFragment: BaseSettingsFragment(), Root, CanShowSnackbar, CanSh
                 preference {
                     icon = ContextCompat.getDrawable(
                         requireContext(),
+                        dev.oneuiproject.oneui.R.drawable.ic_oui_contact_outline
+                    )
+                    title = getString(R.string.settings_main_find_catalog_title)
+                    summary = getString(R.string.settings_main_find_catalog_content)
+                    onClick {
+                        viewModel.onFindCatalogClicked()
+                    }
+                }
+                preference {
+                    icon = ContextCompat.getDrawable(
+                        requireContext(),
                         dev.oneuiproject.oneui.R.drawable.ic_oui_accounts_backup
                     )
                     title = getString(R.string.settings_main_backup_restore_title)

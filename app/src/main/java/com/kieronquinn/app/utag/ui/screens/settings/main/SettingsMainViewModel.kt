@@ -36,6 +36,7 @@ abstract class SettingsMainViewModel: ViewModel() {
     abstract fun onSmartThingsPermissionClicked()
     abstract fun onUpdateSnackbarVisiblityChanged(visible: Boolean)
     abstract fun onAdvancedClicked()
+    abstract fun onFindCatalogClicked()
 
     abstract fun onLocationClicked()
     abstract fun onMapClicked()
@@ -189,6 +190,14 @@ class SettingsMainViewModelImpl(
             navigation.navigate(
                 SettingsMainFragmentDirections
                     .actionSettingsMainFragmentToSettingsSecurityFragment()
+            )
+        }
+    }
+
+    override fun onFindCatalogClicked() {
+        viewModelScope.launch {
+            navigation.navigate(
+                SettingsMainFragmentDirections.actionSettingsMainFragmentToFindCatalogFragment()
             )
         }
     }

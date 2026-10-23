@@ -51,6 +51,13 @@
             app:popEnterAnim="@anim/sesl_fragment_close_enter"
             app:popExitAnim="@anim/sesl_fragment_close_exit" />
         <action
+            android:id="@+id/action_settingsMainFragment_to_findCatalogFragment"
+            app:destination="@id/findCatalogFragment"
+            app:enterAnim="@anim/sesl_fragment_open_enter"
+            app:exitAnim="@anim/sesl_fragment_open_exit"
+            app:popEnterAnim="@anim/sesl_fragment_close_enter"
+            app:popExitAnim="@anim/sesl_fragment_close_exit" />
+        <action
             android:id="@+id/action_settingsMainFragment_to_settingsFaqFragment"
             app:destination="@id/settingsFaqFragment"
             app:enterAnim="@anim/sesl_fragment_open_enter"
@@ -423,4 +430,8 @@
         android:id="@+id/settingsLanguageFragment"
         android:name="com.kieronquinn.app.utag.ui.screens.settings.advanced.language.SettingsLanguageFragment"
         android:label="@string/settings_advanced_language" />
+    <fragment
+        android:id="@+id/findCatalogFragment"
+        android:name="com.kieronquinn.app.utag.ui.screens.settings.findcatalog.FindCatalogFragment"
+        android:label="@string/find_catalog_title" />
 </navigation>

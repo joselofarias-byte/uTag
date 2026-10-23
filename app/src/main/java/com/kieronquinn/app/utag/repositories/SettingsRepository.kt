@@ -106,6 +106,13 @@ interface SettingsRepository: BaseSettingsRepository {
     val petWalkingExperimentalEnabled: UTagSetting<Boolean>
 
     /**
+     *  Experimental list of non-tag rows already returned by FMM GET /devices.
+     *  Off until the user opts in. Does not call undocumented Find tab APIs.
+     */
+    @IgnoreInBackup
+    val findCatalogExperimentalEnabled: UTagSetting<Boolean>
+
+    /**
      *  Whether the user has seen the Automation shared tag warning, which is only displayed once.
      */
     @IgnoreInBackup
@@ -203,6 +210,9 @@ class SettingsRepositoryImpl(context: Context): BaseSettingsRepositoryImpl(), Se
         private const val KEY_PET_WALKING_EXPERIMENTAL = "pet_walking_experimental"
         private const val DEFAULT_PET_WALKING_EXPERIMENTAL = false
 
+        private const val KEY_FIND_CATALOG_EXPERIMENTAL = "find_catalog_experimental"
+        private const val DEFAULT_FIND_CATALOG_EXPERIMENTAL = false
+
         private const val KEY_HAS_SEEN_AUTOMATION_WARNING = "has_seen_automation_warning"
         private const val DEFAULT_HAS_SEEN_AUTOMATION_WARNING = false
 
@@ -270,6 +280,11 @@ class SettingsRepositoryImpl(context: Context): BaseSettingsRepositoryImpl(), Se
     override val petWalkingExperimentalEnabled = boolean(
         KEY_PET_WALKING_EXPERIMENTAL,
         DEFAULT_PET_WALKING_EXPERIMENTAL
+    )
+
+    override val findCatalogExperimentalEnabled = boolean(
+        KEY_FIND_CATALOG_EXPERIMENTAL,
+        DEFAULT_FIND_CATALOG_EXPERIMENTAL
     )
 
     override val hasSeenAutomationWarning = boolean(
