@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions.loadRawResourceStyle
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.TileOverlay
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.StrokeStyle
 import com.google.android.gms.maps.model.StyleSpan
@@ -72,6 +73,11 @@ import com.kieronquinn.app.utag.utils.recyclerview.CenterLayoutManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import com.kieronquinn.app.utag.utils.maps.OsmTileProvider
+import com.kieronquinn.app.utag.utils.maps.applyUTagMapStyle
+import com.kieronquinn.app.utag.utils.maps.offsetOsmAttribution
+import com.kieronquinn.app.utag.utils.maps.showOsmAttribution
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.lang.ref.WeakReference
@@ -98,6 +104,8 @@ class TagLocationHistoryFragment: BoundFragment<FragmentTagLocationHistoryBindin
     private var listContentHash: Int? = null
     private var hasCameraInitiallyMoved = false
     private var backDispatcherCallbackNative: Any? = null
+    private val osmTiles by inject<OsmTileProvider>()
+    private var osmOverlay: TileOverlay? = null
     private var appliedMapTheme: MapTheme? = null
     private var appliedMapStyle: MapStyle? = null
     private var menu: Menu? = null
@@ -434,8 +442,9 @@ class TagLocationHistoryFragment: BoundFragment<FragmentTagLocationHistoryBindin
 
     @Synchronized
     private fun GoogleMap.applyStyle(style: MapStyle) {
+        binding.mapOsmAttribution.showOsmAttribution(style == MapStyle.OSM)
         if(style == appliedMapStyle) return
-        mapType = style.style
+        osmOverlay = applyUTagMapStyle(style, osmOverlay, osmTiles)
         appliedMapStyle = style
     }
 
@@ -444,10 +453,12 @@ class TagLocationHistoryFragment: BoundFragment<FragmentTagLocationHistoryBindin
             //Map is to the right of the card
             val leftInset = tagLocationHistoryCard.root.widthWithMargins
             setPadding(leftInset, 0, 0, insets.bottom)
+            mapOsmAttribution.offsetOsmAttribution(leftInset, insets.bottom)
         }else{
             //Map is above the card
             val bottomInset = tagLocationHistoryCard.root.height
             setPadding(0, 0, 0, bottomInset)
+            mapOsmAttribution.offsetOsmAttribution(0, bottomInset)
         }
     }
 

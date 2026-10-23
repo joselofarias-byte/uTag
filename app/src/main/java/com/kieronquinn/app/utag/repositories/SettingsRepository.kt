@@ -137,7 +137,8 @@ interface SettingsRepository: BaseSettingsRepository {
     enum class MapStyle(val style: Int, @StringRes val label: Int) {
         NORMAL(GoogleMap.MAP_TYPE_NORMAL, R.string.settings_map_style_normal),
         TERRAIN(GoogleMap.MAP_TYPE_TERRAIN, R.string.settings_map_style_terrain),
-        SATELLITE(GoogleMap.MAP_TYPE_HYBRID, R.string.settings_map_style_satellite)
+        SATELLITE(GoogleMap.MAP_TYPE_HYBRID, R.string.settings_map_style_satellite),
+        OSM(GoogleMap.MAP_TYPE_NONE, R.string.settings_map_style_osm)
     }
 
     enum class MapTheme(@StringRes val label: Int) {

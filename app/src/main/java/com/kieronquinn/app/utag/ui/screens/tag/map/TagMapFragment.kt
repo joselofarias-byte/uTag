@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.TileOverlay
 import com.kieronquinn.app.utag.Application.Companion.PACKAGE_NAME_ONECONNECT
 import com.kieronquinn.app.utag.R
 import com.kieronquinn.app.utag.databinding.FragmentTagMapBinding
@@ -69,6 +70,11 @@ import com.kieronquinn.app.utag.utils.extensions.widthWithMargins
 import dev.oneuiproject.oneui.widget.Toast
 import kotlinx.coroutines.flow.first
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
+import com.kieronquinn.app.utag.utils.maps.OsmTileProvider
+import com.kieronquinn.app.utag.utils.maps.applyUTagMapStyle
+import com.kieronquinn.app.utag.utils.maps.offsetOsmAttribution
+import com.kieronquinn.app.utag.utils.maps.showOsmAttribution
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.lang.ref.WeakReference
@@ -103,6 +109,8 @@ class TagMapFragment: BoundFragment<FragmentTagMapBinding>(FragmentTagMapBinding
     private var myLocationMarker: Marker? = null
     private val markers = HashMap<String, Marker>()
     private var appliedMapTheme: MapTheme? = null
+    private val osmTiles by inject<OsmTileProvider>()
+    private var osmOverlay: TileOverlay? = null
     private var appliedMapStyle: MapStyle? = null
     private var map: WeakReference<GoogleMap>? = null
 
@@ -385,7 +393,7 @@ class TagMapFragment: BoundFragment<FragmentTagMapBinding>(FragmentTagMapBinding
     @Synchronized
     private fun GoogleMap.applyTheme(theme: MapTheme, style: MapStyle): Boolean? {
         return when(style) {
-            MapStyle.TERRAIN -> false //Light theme
+            MapStyle.TERRAIN, MapStyle.OSM -> false //Light theme
             MapStyle.SATELLITE -> true //Dark theme
             MapStyle.NORMAL -> {
                 val themeToApply = when(theme) {
@@ -408,8 +416,9 @@ class TagMapFragment: BoundFragment<FragmentTagMapBinding>(FragmentTagMapBinding
 
     @Synchronized
     private fun GoogleMap.applyStyle(style: MapStyle) {
+        binding.mapOsmAttribution.showOsmAttribution(style == MapStyle.OSM)
         if(style == appliedMapStyle) return
-        mapType = style.style
+        osmOverlay = applyUTagMapStyle(style, osmOverlay, osmTiles)
         appliedMapStyle = style
     }
 
@@ -514,10 +523,12 @@ class TagMapFragment: BoundFragment<FragmentTagMapBinding>(FragmentTagMapBinding
             //Map is to the right of the card, margins include the insets
             val leftInset = tagMapCard.root.widthWithMargins
             setPadding(leftInset, topInset, insets.right, insets.bottom)
+            mapOsmAttribution.offsetOsmAttribution(leftInset, insets.bottom)
         }else{
             //Map is above the card, bottom margin is the inset
             val bottomInset = tagMapCard.root.height + tagMapCard.root.marginBottom
             setPadding(insets.left, topInset, insets.right, bottomInset)
+            mapOsmAttribution.offsetOsmAttribution(insets.left, bottomInset)
         }
     }
 

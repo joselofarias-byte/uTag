@@ -15,6 +15,9 @@ import com.kieronquinn.app.utag.repositories.SettingsRepository.MapTheme
 import com.kieronquinn.app.utag.utils.extensions.compress
 import com.kieronquinn.app.utag.utils.extensions.generateGoogleMap
 import com.kieronquinn.app.utag.utils.extensions.isDarkMode
+import com.kieronquinn.app.utag.utils.maps.OsmTileProvider
+import com.kieronquinn.app.utag.utils.maps.applyUTagMapStyle
+import com.kieronquinn.app.utag.utils.maps.withOsmAttribution
 import java.io.File
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
@@ -70,7 +73,8 @@ interface StaticMapRepository {
 class StaticMapRepositoryImpl(
     private val context: Context,
     private val encryptedSettingsRepository: EncryptedSettingsRepository,
-    settingsRepository: SettingsRepository
+    settingsRepository: SettingsRepository,
+    private val osmTileProvider: OsmTileProvider
 ): StaticMapRepository {
 
     private val encryptedImagesDirectory = File(context.filesDir, "images").apply {
@@ -106,13 +110,13 @@ class StaticMapRepositoryImpl(
         moveWatermark: Boolean,
         markers: GoogleMap.() -> List<MarkerOptions>
     ): Bitmap? {
+        val resolvedStyle = style ?: mapStyle.get()
         val modifier: suspend GoogleMap.() -> Unit = {
-            val mapStyle = style ?: mapStyle.get()
             val mapTheme = theme ?: mapTheme.get()
-            mapType = mapStyle.style
-            applyTheme(mapTheme, mapStyle)
+            applyUTagMapStyle(resolvedStyle, null, osmTileProvider)
+            applyTheme(mapTheme, resolvedStyle)
         }
-        return context.generateGoogleMap(
+        val bitmap = context.generateGoogleMap(
             width = width,
             height = height,
             padding = mapPadding,
@@ -121,7 +125,8 @@ class StaticMapRepositoryImpl(
             modifier = modifier,
             markers = markers,
             moveWatermark = moveWatermark
-        )
+        ) ?: return null
+        return if (resolvedStyle == MapStyle.OSM) bitmap.withOsmAttribution() else bitmap
     }
 
     override suspend fun generateStaticMapUri(

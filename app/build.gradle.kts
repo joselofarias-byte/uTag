@@ -186,4 +186,5 @@ dependencies {
     ksp(libs.room.compiler)
     implementation(project(":xposed-core"))
     implementation(project(":uwb"))
+    testImplementation("junit:junit:4.13.2")
 }
