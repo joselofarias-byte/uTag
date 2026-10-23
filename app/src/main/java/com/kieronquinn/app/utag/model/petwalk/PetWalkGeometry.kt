@@ -9,10 +9,12 @@ import kotlin.math.sqrt
 
 /**
  * Pure decisions for the local pet-walk recorder. A sample is kept when the phone or the tag
- * has moved, the tag status changed, or the previous kept sample is already stale. Tag distance
- * connects the fixes that actually arrived, so a gap becomes one straight segment.
+ * has moved, the tag status changed, or the previous kept sample is already stale. Missing, invalid or stale fixes split the route instead of inventing a straight segment.
  */
 object PetWalkGeometry {
+
+    const val MAX_SEGMENT_GAP_MS = 180_000L
+    const val MAX_PHONE_AGE_MS = 30_000L
 
     const val MIN_MOVE_METRES = 5.0
     const val MIN_KEEP_INTERVAL_MS = 120_000L
@@ -26,17 +28,58 @@ object PetWalkGeometry {
         val endLatitude = Math.toRadians(to.latitude)
         val haversine = sin(latitudeDelta / 2).pow(2) +
             cos(startLatitude) * cos(endLatitude) * sin(longitudeDelta / 2).pow(2)
-        return 2 * EARTH_RADIUS_METRES * asin(sqrt(haversine))
+        return 2 * EARTH_RADIUS_METRES * asin(sqrt(haversine.coerceIn(0.0, 1.0)))
+    }
+
+    fun isValid(point: GeoPoint): Boolean {
+        return point.latitude.isFinite() && point.longitude.isFinite() &&
+            point.latitude in -90.0..90.0 && point.longitude in -180.0..180.0 &&
+            (point.accuracyMetres == null ||
+                (point.accuracyMetres.isFinite() && point.accuracyMetres >= 0.0))
+    }
+
+    fun isFreshPhone(point: GeoPoint, now: Long): Boolean {
+        val accuracy = point.accuracyMetres ?: return false
+        return isValid(point) && accuracy in 0.0..50.0 &&
+            point.capturedAt <= now && now - point.capturedAt <= MAX_PHONE_AGE_MS
+    }
+
+    /** Used by distance, the map and GPX so they agree about discontinuities. */
+    fun segments(points: List<GeoPoint?>): List<List<GeoPoint>> {
+        val segments = mutableListOf<MutableList<GeoPoint>>()
+        var current: MutableList<GeoPoint>? = null
+        for (point in points) {
+            if (point == null || !isValid(point)) {
+                current = null
+                continue
+            }
+            val previous = current?.lastOrNull()
+            if (previous != null && point.capturedAt == previous.capturedAt &&
+                point.latitude == previous.latitude && point.longitude == previous.longitude) continue
+            if (previous != null && (point.capturedAt <= previous.capturedAt ||
+                        point.capturedAt - previous.capturedAt > MAX_SEGMENT_GAP_MS)) current = null
+            if (current == null) {
+                current = mutableListOf()
+                segments.add(current)
+            }
+            current.add(point)
+        }
+        return segments
     }
 
     fun pathDistanceMetres(points: List<GeoPoint?>): Double {
-        return points.filterNotNull().zipWithNext().sumOf { (from, to) ->
-            distanceMetres(from, to)
+        return segments(points).sumOf { segment ->
+            segment.zipWithNext().sumOf { (from, to) -> distanceMetres(from, to) }
         }
     }
 
     fun shouldKeepSample(previous: PetWalkSampleDraft?, next: PetWalkSampleDraft): Boolean {
-        if (next.phone == null && next.tag == null) return false
+        if (previous != null && next.recordedAt <= previous.recordedAt) return false
+        if (next.phone == null && next.tag == null) {
+            // Preserve a loss of fixes as a break in both routes.
+            return previous != null && (previous.phone != null || previous.tag != null ||
+                previous.tagStatus != next.tagStatus)
+        }
         if (previous == null) return true
         if (moved(previous.phone, next.phone) || moved(previous.tag, next.tag)) return true
         if (previous.tagStatus != next.tagStatus) return true

@@ -23,7 +23,7 @@ class PetWalkGeometryTest {
     }
 
     @Test
-    fun pathSkipsMissingPointsAndStillJoinsTheFixesThatExist() {
+    fun missingPointsBreakTheRoute() {
         val distance = PetWalkGeometry.pathDistanceMetres(
             listOf(
                 point(0.0, 0.0, 0L),
@@ -31,7 +31,7 @@ class PetWalkGeometryTest {
                 point(0.0, 1.0, 1L)
             )
         )
-        assertEquals(111_194.9, distance, 50.0)
+        assertEquals(0.0, distance, 0.001)
     }
 
     @Test
@@ -90,7 +90,7 @@ class PetWalkGeometryTest {
             now = 999L
         )
         assertEquals(222_389.8, summary.phoneDistanceMetres, 100.0)
-        assertEquals(111_194.9, summary.tagDistanceMetres, 50.0)
+        assertEquals(0.0, summary.tagDistanceMetres, 0.001)
         assertEquals(3, summary.sampleCount)
         assertEquals(2, summary.locatedTagSamples)
         assertEquals(2, summary.eventCount)
@@ -112,6 +112,28 @@ class PetWalkGeometryTest {
         assertEquals("1m", PetWalkGeometry.formatDuration(summary.durationMillis))
         assertEquals("12 m", PetWalkGeometry.formatDistance(12.4))
         assertEquals("1.50 km", PetWalkGeometry.formatDistance(1500.0))
+    }
+
+    @Test
+    fun lossOfAllFixesIsKeptAsABreak() {
+        val first = sample(phone = point(0.0, 0.0, 1000L), recordedAt = 1000L)
+        assertTrue(PetWalkGeometry.shouldKeepSample(first, sample(recordedAt = 2000L)))
+        assertFalse(PetWalkGeometry.shouldKeepSample(first, first))
+    }
+
+    @Test
+    fun staleAndInvalidFixesDoNotBridgeSegments() {
+        val first = point(0.0, 0.0, 1000L)
+        val stale = point(1.0, 1.0, 200000L)
+        assertEquals(0.0, PetWalkGeometry.pathDistanceMetres(listOf(first, stale)), 0.001)
+        assertEquals(0.0, PetWalkGeometry.pathDistanceMetres(listOf(first, first)), 0.001)
+        assertFalse(PetWalkGeometry.isValid(point(Double.NaN, 0.0, 1000L)))
+        assertFalse(PetWalkGeometry.isValid(point(91.0, 0.0, 1000L)))
+        assertTrue(PetWalkGeometry.isFreshPhone(first, 30000L))
+        assertFalse(PetWalkGeometry.isFreshPhone(first, 32000L))
+        assertFalse(PetWalkGeometry.isFreshPhone(first, 999L))
+        assertFalse(PetWalkGeometry.isFreshPhone(first.copy(accuracyMetres = 51.0), 1000L))
+        assertFalse(PetWalkGeometry.isFreshPhone(first.copy(accuracyMetres = null), 1000L))
     }
 
     private fun point(latitude: Double, longitude: Double, capturedAt: Long): GeoPoint {

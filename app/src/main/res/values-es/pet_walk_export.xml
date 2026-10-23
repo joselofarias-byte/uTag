@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="pet_walk_export_gpx">Exportar GPX (teléfono y SmartTag separados)</string>
+  <string name="pet_walk_export_retry">Exportación interrumpida. Volvé a exportar.</string>
+  <string name="pet_walk_export_success">GPX guardado</string>
+  <string name="pet_walk_export_failure">No se pudo guardar el GPX</string>
+</resources>

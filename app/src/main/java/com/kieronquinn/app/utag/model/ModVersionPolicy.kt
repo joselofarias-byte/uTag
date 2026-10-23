@@ -40,7 +40,7 @@ object ModVersionPolicy {
         if (remoteVersionCode == null) return false
         if (installedVersionCode == null) return true
         if (isUpToDate(installedVersionCode, expectedVersionCode)) return false
-        return remoteVersionCode != installedVersionCode
+        return remoteVersionCode > installedVersionCode
     }
 
 }

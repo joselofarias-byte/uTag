@@ -57,6 +57,11 @@ class ModVersionPolicyTest {
     }
 
     @Test
+    fun neverOffersADowngrade() {
+        assertFalse(ModVersionPolicy.shouldOfferModUpdate(1021, 1020, 1019, false))
+    }
+
+    @Test
     fun playInstallAndMissingRemoteNeverOffer() {
         assertFalse(
             ModVersionPolicy.shouldOfferModUpdate(

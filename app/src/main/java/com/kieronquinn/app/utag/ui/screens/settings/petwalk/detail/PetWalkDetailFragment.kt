@@ -1,6 +1,13 @@
 package com.kieronquinn.app.utag.ui.screens.settings.petwalk.detail
 
 import android.os.Bundle
+import android.content.Intent
+import android.app.Activity
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import com.kieronquinn.app.utag.model.petwalk.PetWalkGpx
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModel
@@ -94,14 +101,49 @@ class PetWalkDetailFragment: BoundFragment<FragmentPetWalkDetailBinding>(
     }
     private val dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
     private var movedCamera = false
+    private var exportSnapshot: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val bottom = resources.getDimensionPixelSize(R.dimen.bottom_nav_height)
         binding.root.setPadding(0, 0, 0, bottom)
         binding.petWalkDetailDelete.setOnClickListener { confirmDelete() }
+        binding.petWalkDetailExport.setOnClickListener {
+            val state = viewModel.state.value as? PetWalkDetailViewModel.State.Loaded ?: return@setOnClickListener
+            exportSnapshot = PetWalkGpx.export(state.snapshot.walk.deviceLabel, state.snapshot.samples.map { it.toDraft() })
+            startActivityForResult(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "application/gpx+xml"
+                putExtra(Intent.EXTRA_TITLE, "pet-walk-${state.snapshot.walk.startedAt}.gpx")
+            }, 7301)
+        }
         whenResumed {
             viewModel.state.collect { render(it) }
+        }
+    }
+
+    @Deprecated("Uses the Activity API supported by this project")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode != 7301) return
+        val snapshot = exportSnapshot
+        exportSnapshot = null
+        if (resultCode != Activity.RESULT_OK) return
+        val uri = data?.data ?: return
+        val context = requireContext().applicationContext
+        if (snapshot == null) {
+            Toast.makeText(context, R.string.pet_walk_export_retry, Toast.LENGTH_LONG).show()
+            return
+        }
+        lifecycleScope.launch {
+            val success = withContext(Dispatchers.IO) {
+                runCatching {
+                    requireNotNull(context.contentResolver.openOutputStream(uri, "wt"))
+                        .bufferedWriter(Charsets.UTF_8).use { it.write(snapshot) }
+                }.isSuccess
+            }
+            Toast.makeText(context, if (success) R.string.pet_walk_export_success else R.string.pet_walk_export_failure,
+                Toast.LENGTH_LONG).show()
         }
     }
 
@@ -226,10 +268,12 @@ class PetWalkDetailFragment: BoundFragment<FragmentPetWalkDetailBinding>(
 
     private fun draw(map: GoogleMap, snapshot: PetWalkRepository.PetWalkSnapshot) {
         map.clear()
-        val phone = snapshot.samples.mapNotNull { it.toDraft().phone }
-        val tag = snapshot.samples.mapNotNull { it.toDraft().tag }
-        addLine(map, phone, requireContext().getColor(R.color.pet_walk_phone_line))
-        addLine(map, tag, requireContext().getColor(R.color.pet_walk_tag_line))
+        val phoneSegments = PetWalkGeometry.segments(snapshot.samples.map { it.toDraft().phone })
+        val tagSegments = PetWalkGeometry.segments(snapshot.samples.map { it.toDraft().tag })
+        phoneSegments.forEach { addLine(map, it, requireContext().getColor(R.color.pet_walk_phone_line)) }
+        tagSegments.forEach { addLine(map, it, requireContext().getColor(R.color.pet_walk_tag_line)) }
+        val phone = phoneSegments.flatten()
+        val tag = tagSegments.flatten()
         snapshot.events.forEach { event ->
             val point = eventPoint(event) ?: return@forEach
             map.addMarker(
