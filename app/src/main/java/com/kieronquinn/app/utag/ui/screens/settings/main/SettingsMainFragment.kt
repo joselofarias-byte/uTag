@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.kieronquinn.app.utag.R
+import com.kieronquinn.app.utag.model.LaunchScreen
 import com.kieronquinn.app.utag.repositories.SmartThingsRepository.ModuleState
 import com.kieronquinn.app.utag.repositories.SmartThingsRepository.ModuleState.Companion.isFatal
 import com.kieronquinn.app.utag.service.UTagForegroundService
@@ -17,6 +18,8 @@ import com.kieronquinn.app.utag.ui.screens.settings.main.SettingsMainViewModel.E
 import com.kieronquinn.app.utag.ui.screens.settings.main.SettingsMainViewModel.State
 import com.kieronquinn.app.utag.utils.extensions.whenResumed
 import com.kieronquinn.app.utag.utils.preferences.actionCardPreference
+import com.kieronquinn.app.utag.utils.preferences.dropDownPreference
+import com.kieronquinn.app.utag.utils.preferences.onChange
 import com.kieronquinn.app.utag.utils.preferences.onClick
 import com.kieronquinn.app.utag.utils.preferences.preference
 import com.kieronquinn.app.utag.utils.preferences.preferenceCategory
@@ -162,6 +165,30 @@ class SettingsMainFragment: BaseSettingsFragment(), Root, CanShowSnackbar, CanSh
                     }
                 }
                 preference {
+                    title = getString(R.string.settings_main_open_map_title)
+                    summary = getString(R.string.settings_main_open_map_content)
+                    icon = ContextCompat.getDrawable(
+                        requireContext(),
+                        dev.oneuiproject.oneui.R.drawable.ic_oui_location_outline
+                    )
+                    onClick {
+                        viewModel.onOpenMapClicked()
+                    }
+                }
+                dropDownPreference {
+                    title = getString(R.string.settings_main_launch_title)
+                    value = state.launchScreen.name
+                    summary = launchScreenLabel(state.launchScreen)
+                    entries = arrayOf(
+                        getString(R.string.settings_main_launch_map),
+                        getString(R.string.settings_main_launch_settings)
+                    )
+                    entryValues = arrayOf(LaunchScreen.MAP.name, LaunchScreen.SETTINGS.name)
+                    onChange<String> {
+                        viewModel.onLaunchScreenChanged(LaunchScreen.valueOf(it))
+                    }
+                }
+                preference {
                     title = getString(R.string.settings_main_security_title)
                     summary = getString(R.string.settings_main_security_content)
                     icon = ContextCompat.getDrawable(
@@ -255,6 +282,13 @@ class SettingsMainFragment: BaseSettingsFragment(), Root, CanShowSnackbar, CanSh
                 dialog.dismiss()
             }
         }.show()
+    }
+
+    private fun launchScreenLabel(screen: LaunchScreen): String {
+        return when (screen) {
+            LaunchScreen.MAP -> getString(R.string.settings_main_launch_map)
+            LaunchScreen.SETTINGS -> getString(R.string.settings_main_launch_settings)
+        }
     }
 
     private fun State.Loaded.getPadding(): Int {
