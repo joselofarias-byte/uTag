@@ -194,6 +194,17 @@ class SettingsMainFragment: BaseSettingsFragment(), Root, CanShowSnackbar, CanSh
                         viewModel.onBackupRestoreClicked()
                     }
                 }
+                preference {
+                    icon = ContextCompat.getDrawable(
+                        requireContext(),
+                        dev.oneuiproject.oneui.R.drawable.ic_oui_location_outline
+                    )
+                    title = getString(R.string.settings_main_pet_walk_title)
+                    summary = getString(R.string.settings_main_pet_walk_content)
+                    onClick {
+                        viewModel.onPetWalkingClicked()
+                    }
+                }
             }
         }
         preferenceCategory("main_help") {
