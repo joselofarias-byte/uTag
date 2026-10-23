@@ -10,6 +10,7 @@ import com.kieronquinn.app.utag.R
 import com.kieronquinn.app.utag.components.navigation.RootNavigation
 import com.kieronquinn.app.utag.components.navigation.setupWithNavigation
 import com.kieronquinn.app.utag.databinding.FragmentRootBinding
+import com.kieronquinn.app.utag.ui.activities.MainActivity
 import com.kieronquinn.app.utag.ui.base.BoundFragment
 import com.kieronquinn.app.utag.ui.screens.root.RootViewModel.State
 import com.kieronquinn.app.utag.utils.extensions.BiometricEvent
@@ -44,6 +45,9 @@ class RootFragment: BoundFragment<FragmentRootBinding>(FragmentRootBinding::infl
         viewModel.state.collect {
             it.destination?.let { destination ->
                 navigation.navigate(destination)
+            }
+            if (it is State.Settings) {
+                (activity as? MainActivity)?.openMapIfPreferred()
             }
             if(it is State.BiometricPrompt) {
                 binding.rootOverlay.isVisible = true

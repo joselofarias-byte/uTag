@@ -191,6 +191,7 @@ class TagMapFragment: BoundFragment<FragmentTagMapBinding>(FragmentTagMapBinding
                     R.id.menu_map_add_to_home -> showAddToHomeDialog()
                     R.id.menu_map_settings -> {
                         startActivity(Intent(requireContext(), MainActivity::class.java).apply {
+                            putExtra(MainActivity.EXTRA_FORCE_SETTINGS, true)
                             addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
                         })
                     }

@@ -7,6 +7,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.kieronquinn.app.utag.R
 import com.kieronquinn.app.utag.providers.SettingsProvider
 import com.kieronquinn.app.utag.repositories.BaseSettingsRepository.UTagSetting
+import com.kieronquinn.app.utag.model.LaunchScreen
 import com.kieronquinn.app.utag.repositories.SettingsRepository.MapStyle
 import com.kieronquinn.app.utag.repositories.SettingsRepository.MapTheme
 import com.kieronquinn.app.utag.repositories.SettingsRepository.Units
@@ -48,6 +49,12 @@ interface SettingsRepository: BaseSettingsRepository {
      */
     @IgnoreInBackup
     val isMyLocationEnabled: UTagSetting<Boolean>
+
+    /**
+     *  Screen opened by the launcher icon after setup. The map stays one tap away,
+     *  and settings remain available from the map menu.
+     */
+    val launchScreen: UTagSetting<LaunchScreen>
 
     /**
      *  The style to apply to the find map
@@ -183,6 +190,9 @@ class SettingsRepositoryImpl(context: Context): BaseSettingsRepositoryImpl(), Se
         private const val KEY_IS_MY_LOCATION_ENABLED = "is_my_location_enabled"
         private const val DEFAULT_IS_MY_LOCATION_ENABLED = true //Default enabled but needs permission
 
+        private const val KEY_LAUNCH_SCREEN = "launch_screen"
+        private val DEFAULT_LAUNCH_SCREEN = LaunchScreen.MAP
+
         private const val KEY_MAP_STYLE = "map_style"
         private val DEFAULT_MAP_STYLE = MapStyle.NORMAL
 
@@ -250,6 +260,8 @@ class SettingsRepositoryImpl(context: Context): BaseSettingsRepositoryImpl(), Se
 
     override val isMyLocationEnabled =
         boolean(KEY_IS_MY_LOCATION_ENABLED, DEFAULT_IS_MY_LOCATION_ENABLED)
+
+    override val launchScreen = enum(KEY_LAUNCH_SCREEN, DEFAULT_LAUNCH_SCREEN)
 
     override val mapStyle = enum(KEY_MAP_STYLE, DEFAULT_MAP_STYLE)
 
