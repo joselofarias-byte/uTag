@@ -3,6 +3,7 @@ package com.kieronquinn.app.utag.ui.screens.tag.more.main
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import android.text.Html
 import android.text.util.Linkify
 import android.view.View
@@ -46,6 +47,10 @@ class MoreMainFragment : BaseSettingsFragment(), BackAvailable, ProvidesBack, Pr
 
     private val viewModel by viewModel<MoreMainViewModel> {
         parametersOf(args.deviceId)
+    }
+
+    private val pickIcon = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null) viewModel.onCustomIconPicked(uri)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -132,6 +137,32 @@ class MoreMainFragment : BaseSettingsFragment(), BackAvailable, ProvidesBack, Pr
 
     private fun PreferenceGroup.setContent(state: State.Loaded) {
         val isSharedDevice = !state.deviceInfo.isOwner
+        preference {
+            title = getString(R.string.tag_more_custom_icon)
+            summary = getString(
+                if (state.hasCustomIcon) {
+                    R.string.tag_more_custom_icon_set
+                } else {
+                    R.string.tag_more_custom_icon_content
+                }
+            )
+            icon = ContextCompat.getDrawable(
+                requireContext(),
+                dev.oneuiproject.oneui.R.drawable.ic_oui_image_outline
+            )
+            onClick {
+                pickIcon.launch("image/*")
+            }
+        }
+        if (state.hasCustomIcon) {
+            preference {
+                title = getString(R.string.tag_more_custom_icon_reset)
+                summary = getString(R.string.tag_more_custom_icon_content)
+                onClick {
+                    viewModel.onCustomIconCleared()
+                }
+            }
+        }
         if(!state.requiresAgreement && !state.swapLocationHistory) {
             preference {
                 title = getString(R.string.tag_more_search_nearby)

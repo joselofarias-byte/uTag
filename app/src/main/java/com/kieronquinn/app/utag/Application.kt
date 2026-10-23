@@ -47,6 +47,7 @@ import com.kieronquinn.app.utag.repositories.ContentCreatorRepository
 import com.kieronquinn.app.utag.repositories.ContentCreatorRepositoryImpl
 import com.kieronquinn.app.utag.repositories.DeviceRepository
 import com.kieronquinn.app.utag.repositories.DeviceRepositoryImpl
+import com.kieronquinn.app.utag.repositories.TagIconRepository
 import com.kieronquinn.app.utag.repositories.DownloadRepository
 import com.kieronquinn.app.utag.repositories.DownloadRepositoryImpl
 import com.kieronquinn.app.utag.repositories.EncryptedSettingsRepository
@@ -296,7 +297,8 @@ class Application: Application(), LifecycleEventObserver {
         single<SmartThingsRepository> { SmartThingsRepositoryImpl(get(), get()) }
         single<AuthRepository> { AuthRepositoryImpl(get(), get(), get(), get(), get(), get(), get()) }
         single<ApiRepository> { ApiRepositoryImpl(get(), get(), get(), get(), get(), get()) }
-        single<DeviceRepository> { DeviceRepositoryImpl(get(), get(), get(), get()) }
+        single { TagIconRepository(get()) }
+        single<DeviceRepository> { DeviceRepositoryImpl(get(), get(), get(), get(), get()) }
         single<LocationRepository> { LocationRepositoryImpl(get(), get()) }
         single<GeocoderRepository> {
             GeocoderRepositoryImpl(get(), get())
@@ -404,7 +406,7 @@ class Application: Application(), LifecycleEventObserver {
             TagLocationHistoryViewModelImpl(get(), params.get(), params.get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         viewModel<MoreMainViewModel> { deviceId ->
-            MoreMainViewModelImpl(get(), get(), get(), get(), deviceId.get(), get(), get(), get(), get(), get(), get(), get(), get())
+            MoreMainViewModelImpl(get(), get(), get(), get(), deviceId.get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         viewModel<LostModeGuideViewModel> { params -> LostModeGuideViewModelImpl(get(), params.get(), params.get()) }
         viewModel<LostModeSettingsViewModel> { params ->

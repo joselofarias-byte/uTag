@@ -410,6 +410,10 @@
     <string name="tag_location_history_info_content_item">Location %1d:\n\nLatitude: %1s\nLongitude: %1s\nTimestamp: %1s\nAccuracy: %1s\nSpeed: %1s\nRssi: %1s\nBattery: %1s\nMethod: %1s\nFind host: %1s\nNearby: %1s\nOn Demand: %1s\nConnected User ID: %1s\nConnected Device ID: %1s\nD2D Status: %1s\nWas Encrypted: %1s</string>
 
     <!-- More page -->
+    <string name="tag_more_custom_icon">Custom icon</string>
+    <string name="tag_more_custom_icon_content">Pick an image for this tag on the map and widgets</string>
+    <string name="tag_more_custom_icon_set">Using your image. Tap to choose another.</string>
+    <string name="tag_more_custom_icon_reset">Use Samsung\'s icon</string>
     <string name="tag_more_search_nearby">Search nearby</string>
     <string name="tag_more_search_nearby_disabled">Disable Passive Mode to use this option</string>
     <string name="tag_more_navigate">Navigate</string>

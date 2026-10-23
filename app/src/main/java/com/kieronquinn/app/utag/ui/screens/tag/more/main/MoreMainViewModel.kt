@@ -1,6 +1,7 @@
 package com.kieronquinn.app.utag.ui.screens.tag.more.main
 
 import android.location.Location
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
@@ -16,7 +17,9 @@ import com.kieronquinn.app.utag.repositories.EncryptionRepository
 import com.kieronquinn.app.utag.repositories.FindMyDeviceRepository
 import com.kieronquinn.app.utag.repositories.PassiveModeRepository
 import com.kieronquinn.app.utag.repositories.SafeAreaRepository
+import com.kieronquinn.app.utag.repositories.DeviceRepository
 import com.kieronquinn.app.utag.repositories.SettingsRepository
+import com.kieronquinn.app.utag.repositories.TagIconRepository
 import com.kieronquinn.app.utag.repositories.SmartTagRepository
 import com.kieronquinn.app.utag.repositories.SmartTagRepository.TagState
 import com.kieronquinn.app.utag.repositories.SmartTagRepository.TagState.Loaded.LocationState
@@ -64,6 +67,8 @@ abstract class MoreMainViewModel: ViewModel() {
     abstract fun onFindDeviceChanged(enabled: Boolean)
     abstract fun onAutomationsClicked()
     abstract fun onPassiveModeClicked()
+    abstract fun onCustomIconPicked(uri: Uri)
+    abstract fun onCustomIconCleared()
 
     sealed class State {
         data object Loading: State()
@@ -86,7 +91,8 @@ abstract class MoreMainViewModel: ViewModel() {
             val requiresAgreement: Boolean,
             val offline: Boolean,
             val region: String?,
-            val swapLocationHistory: Boolean
+            val swapLocationHistory: Boolean,
+            val hasCustomIcon: Boolean
         ): State()
         data class PINRequired(val deviceInfo: DeviceInfo): State()
         data object Error: State()
@@ -111,7 +117,9 @@ class MoreMainViewModelImpl(
     settingsRepository: SettingsRepository,
     smartThingsRepository: SmartThingsRepository,
     passiveModeRepository: PassiveModeRepository,
-    authRepository: AuthRepository
+    authRepository: AuthRepository,
+    private val tagIconRepository: TagIconRepository,
+    private val deviceRepository: DeviceRepository
 ): MoreMainViewModel() {
 
     companion object {
@@ -131,6 +139,11 @@ class MoreMainViewModelImpl(
 
     private val tagState = smartTagRepository.getTagState(deviceId).onEach {
         isLoading.emit(false)
+    }
+
+    private val iconRevision = MutableStateFlow(0L)
+    private val tagWithIcon = combine(tagState, iconRevision) { tag, _ ->
+        tag to tagIconRepository.hasCustom(deviceId)
     }
 
     private val lostMode = refreshBus.mapLatest {
@@ -250,12 +263,13 @@ class MoreMainViewModelImpl(
     }
 
     override val state = combine(
-        tagState,
+        tagWithIcon,
         options,
         loading,
         scannedAndConnected,
         location
-    ) { tagState, options, sending, scannedAndConnected, location ->
+    ) { tagWithIcon, options, sending, scannedAndConnected, location ->
+        val (tagState, hasCustomIcon) = tagWithIcon
         val scannedOrConnected = scannedAndConnected.first
         val connected = scannedAndConnected.second
         val state = when(tagState) {
@@ -303,7 +317,8 @@ class MoreMainViewModelImpl(
             state.requiresAgreement(),
             state.locationState?.cached == true,
             options.region,
-            options.swapLocationHistory
+            options.swapLocationHistory,
+            hasCustomIcon
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
@@ -530,6 +545,27 @@ class MoreMainViewModelImpl(
                     deviceId, deviceInfo.label, deviceInfo.shareable
                 )
             )
+        }
+    }
+
+    override fun onCustomIconPicked(uri: Uri) {
+        viewModelScope.launch {
+            if (tagIconRepository.save(deviceId, uri)) {
+                deviceRepository.clearMarkerIcons()
+                smartTagRepository.refreshTagStates()
+                iconRevision.emit(System.currentTimeMillis())
+            } else {
+                events.emit(Event.ERROR)
+            }
+        }
+    }
+
+    override fun onCustomIconCleared() {
+        viewModelScope.launch {
+            tagIconRepository.clear(deviceId)
+            deviceRepository.clearMarkerIcons()
+            smartTagRepository.refreshTagStates()
+            iconRevision.emit(System.currentTimeMillis())
         }
     }
 
