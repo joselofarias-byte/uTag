@@ -32,13 +32,17 @@ interface DeviceRepository {
     suspend fun getDeviceInfo(deviceId: String): DeviceInfo?
     suspend fun getDevices(includeNotOwned: Boolean = false): List<DeviceInfo>?
 
+    /** Drops composited marker bitmaps so a new custom icon is picked up. */
+    fun clearMarkerIcons()
+
 }
 
 class DeviceRepositoryImpl(
     private val encryptedSettingsRepository: EncryptedSettingsRepository,
     private val cacheRepository: CacheRepository,
     context: Context,
-    retrofit: Retrofit
+    retrofit: Retrofit,
+    private val tagIconRepository: TagIconRepository
 ): DeviceRepository, KoinComponent {
 
     companion object {
@@ -120,7 +124,7 @@ class DeviceRepositoryImpl(
             bleD2D.metadata.vendor.setupId,
             bleD2D.metadata.vendor.modelName,
             disconnectedIconUrl,
-            iconUrl.loadMarkerIcons(),
+            iconUrl.loadMarkerIcons(deviceId),
             isOwner,
             bleD2D.metadata.battery?.level,
             (bleD2D.metadata.battery?.updated)?.let { updated -> updated * 1000L },
@@ -139,14 +143,24 @@ class DeviceRepositoryImpl(
         smartTagRepository.cacheKnownTags(ids)
     }
 
-    private suspend fun String.loadMarkerIcons(): Pair<Bitmap, Bitmap> {
+    override fun clearMarkerIcons() {
+        bitmapCache.clear()
+    }
+
+    private suspend fun String.loadMarkerIcons(deviceId: String): Pair<Bitmap, Bitmap> {
+        val customStamp = tagIconRepository.lastModified(deviceId)
+        val cacheKey = if (customStamp > 0L) "custom:$deviceId:$customStamp" else this
         val cacheEntry = BitmapCacheEntry(
-            this,
+            cacheKey,
             DEVICE_ICON_SIZE_IN_TEMPLATE,
             DEVICE_ICON_SIZE_IN_TEMPLATE
         )
         bitmapCache[cacheEntry]?.let { return it }
         val deviceIcon = withContext(Dispatchers.IO) {
+            if (customStamp > 0L) {
+                tagIconRepository.loadBitmap(deviceId, DEVICE_ICON_SIZE_IN_TEMPLATE)
+            } else null
+        } ?: withContext(Dispatchers.IO) {
             try {
                 glide.asBitmap().url(this@loadMarkerIcons)
                     .submit(DEVICE_ICON_SIZE_IN_TEMPLATE, DEVICE_ICON_SIZE_IN_TEMPLATE).get()

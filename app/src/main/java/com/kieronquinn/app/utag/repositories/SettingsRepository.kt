@@ -7,6 +7,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.kieronquinn.app.utag.R
 import com.kieronquinn.app.utag.providers.SettingsProvider
 import com.kieronquinn.app.utag.repositories.BaseSettingsRepository.UTagSetting
+import com.kieronquinn.app.utag.model.LaunchScreen
 import com.kieronquinn.app.utag.repositories.SettingsRepository.MapStyle
 import com.kieronquinn.app.utag.repositories.SettingsRepository.MapTheme
 import com.kieronquinn.app.utag.repositories.SettingsRepository.Units
@@ -48,6 +49,12 @@ interface SettingsRepository: BaseSettingsRepository {
      */
     @IgnoreInBackup
     val isMyLocationEnabled: UTagSetting<Boolean>
+
+    /**
+     *  Screen opened by the launcher icon after setup. The map stays one tap away,
+     *  and settings remain available from the map menu.
+     */
+    val launchScreen: UTagSetting<LaunchScreen>
 
     /**
      *  The style to apply to the find map
@@ -99,6 +106,20 @@ interface SettingsRepository: BaseSettingsRepository {
     val hasSeenFindMyDeviceWarning: UTagSetting<Boolean>
 
     /**
+     *  Local pet-walk recorder. Off until the user opts in. This does not enable SmartThings'
+     *  pet walking flag, which blocks Find my Device.
+     */
+    @IgnoreInBackup
+    val petWalkingExperimentalEnabled: UTagSetting<Boolean>
+
+    /**
+     *  Experimental list of non-tag rows already returned by FMM GET /devices.
+     *  Off until the user opts in. Does not call undocumented Find tab APIs.
+     */
+    @IgnoreInBackup
+    val findCatalogExperimentalEnabled: UTagSetting<Boolean>
+
+    /**
      *  Whether the user has seen the Automation shared tag warning, which is only displayed once.
      */
     @IgnoreInBackup
@@ -137,7 +158,8 @@ interface SettingsRepository: BaseSettingsRepository {
     enum class MapStyle(val style: Int, @StringRes val label: Int) {
         NORMAL(GoogleMap.MAP_TYPE_NORMAL, R.string.settings_map_style_normal),
         TERRAIN(GoogleMap.MAP_TYPE_TERRAIN, R.string.settings_map_style_terrain),
-        SATELLITE(GoogleMap.MAP_TYPE_HYBRID, R.string.settings_map_style_satellite)
+        SATELLITE(GoogleMap.MAP_TYPE_HYBRID, R.string.settings_map_style_satellite),
+        OSM(GoogleMap.MAP_TYPE_NONE, R.string.settings_map_style_osm)
     }
 
     enum class MapTheme(@StringRes val label: Int) {
@@ -169,6 +191,9 @@ class SettingsRepositoryImpl(context: Context): BaseSettingsRepositoryImpl(), Se
         private const val KEY_IS_MY_LOCATION_ENABLED = "is_my_location_enabled"
         private const val DEFAULT_IS_MY_LOCATION_ENABLED = true //Default enabled but needs permission
 
+        private const val KEY_LAUNCH_SCREEN = "launch_screen"
+        private val DEFAULT_LAUNCH_SCREEN = LaunchScreen.MAP
+
         private const val KEY_MAP_STYLE = "map_style"
         private val DEFAULT_MAP_STYLE = MapStyle.NORMAL
 
@@ -192,6 +217,12 @@ class SettingsRepositoryImpl(context: Context): BaseSettingsRepositoryImpl(), Se
 
         private const val KEY_HAS_SEEN_FIND_MY_DEVICE_WARNING = "has_seen_find_my_device_warning"
         private const val DEFAULT_HAS_SEEN_FIND_MY_DEVICE_WARNING = false
+
+        private const val KEY_PET_WALKING_EXPERIMENTAL = "pet_walking_experimental"
+        private const val DEFAULT_PET_WALKING_EXPERIMENTAL = false
+
+        private const val KEY_FIND_CATALOG_EXPERIMENTAL = "find_catalog_experimental"
+        private const val DEFAULT_FIND_CATALOG_EXPERIMENTAL = false
 
         private const val KEY_HAS_SEEN_AUTOMATION_WARNING = "has_seen_automation_warning"
         private const val DEFAULT_HAS_SEEN_AUTOMATION_WARNING = false
@@ -231,6 +262,8 @@ class SettingsRepositoryImpl(context: Context): BaseSettingsRepositoryImpl(), Se
     override val isMyLocationEnabled =
         boolean(KEY_IS_MY_LOCATION_ENABLED, DEFAULT_IS_MY_LOCATION_ENABLED)
 
+    override val launchScreen = enum(KEY_LAUNCH_SCREEN, DEFAULT_LAUNCH_SCREEN)
+
     override val mapStyle = enum(KEY_MAP_STYLE, DEFAULT_MAP_STYLE)
 
     override val mapTheme = enum(KEY_MAP_THEME, DEFAULT_MAP_THEME)
@@ -255,6 +288,16 @@ class SettingsRepositoryImpl(context: Context): BaseSettingsRepositoryImpl(), Se
     override val hasSeenFindMyDeviceWarning = boolean(
         KEY_HAS_SEEN_FIND_MY_DEVICE_WARNING,
         DEFAULT_HAS_SEEN_FIND_MY_DEVICE_WARNING
+    )
+
+    override val petWalkingExperimentalEnabled = boolean(
+        KEY_PET_WALKING_EXPERIMENTAL,
+        DEFAULT_PET_WALKING_EXPERIMENTAL
+    )
+
+    override val findCatalogExperimentalEnabled = boolean(
+        KEY_FIND_CATALOG_EXPERIMENTAL,
+        DEFAULT_FIND_CATALOG_EXPERIMENTAL
     )
 
     override val hasSeenAutomationWarning = boolean(

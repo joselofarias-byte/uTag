@@ -16,6 +16,7 @@
     <color name="colorPrimaryDark">@color/sesl_primary_dark_color_light</color>
     <color name="oui_background_color">@color/sesl_background_color_light</color>
     <color name="oui_surface_color">@color/white</color>
+    <color name="widget_ring_text">#1A1A1A</color>
     <color name="oui_surface_color_variant">#f2f2f2</color>
     <color name="oui_surface_color_variant_dark">#4e4e4e</color>
     <color name="oui_dialog_color">@color/sesl_background_color_light</color>
@@ -25,6 +26,8 @@
     <color name="on_accent_inverse">@color/black</color>
     <color name="on_surface">@color/black</color>
     <color name="location_history_line">#c9c9cc</color>
+    <color name="pet_walk_phone_line">#387AFF</color>
+    <color name="pet_walk_tag_line">#E67E22</color>
     <color name="location_history_selected">#40387aff</color>
     <color name="location_history_selected_text">#5383e3</color>
     <color name="location_history_address_text">@color/black</color>

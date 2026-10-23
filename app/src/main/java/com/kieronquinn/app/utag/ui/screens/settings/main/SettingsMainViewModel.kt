@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kieronquinn.app.utag.Application.Companion.PACKAGE_NAME_ONECONNECT
 import com.kieronquinn.app.utag.components.navigation.SettingsNavigation
+import com.kieronquinn.app.utag.model.LaunchScreen
 import com.kieronquinn.app.utag.networking.model.smartthings.UserInfoResponse
 import com.kieronquinn.app.utag.repositories.AuthRepository
 import com.kieronquinn.app.utag.repositories.SettingsRepository
@@ -14,6 +15,7 @@ import com.kieronquinn.app.utag.repositories.SmartThingsRepository
 import com.kieronquinn.app.utag.repositories.SmartThingsRepository.ModuleState
 import com.kieronquinn.app.utag.repositories.UserRepository
 import com.kieronquinn.app.utag.ui.activities.AuthResponseActivity
+import com.kieronquinn.app.utag.ui.activities.TagActivity
 import com.kieronquinn.app.utag.utils.extensions.getAuthIntent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -36,11 +38,15 @@ abstract class SettingsMainViewModel: ViewModel() {
     abstract fun onSmartThingsPermissionClicked()
     abstract fun onUpdateSnackbarVisiblityChanged(visible: Boolean)
     abstract fun onAdvancedClicked()
+    abstract fun onFindCatalogClicked()
 
     abstract fun onLocationClicked()
     abstract fun onMapClicked()
+    abstract fun onOpenMapClicked()
+    abstract fun onLaunchScreenChanged(screen: LaunchScreen)
     abstract fun onSecurityClicked()
     abstract fun onBackupRestoreClicked()
+    abstract fun onPetWalkingClicked()
     abstract fun onFaqClicked()
     abstract fun onWikiClicked()
 
@@ -50,7 +56,8 @@ abstract class SettingsMainViewModel: ViewModel() {
             val moduleState: ModuleState?,
             val hasPermissions: Boolean,
             val accountInfo: UserInfoResponse?,
-            val updateSnackbarVisible: Boolean
+            val updateSnackbarVisible: Boolean,
+            val launchScreen: LaunchScreen
         ): State()
     }
 
@@ -64,7 +71,7 @@ class SettingsMainViewModelImpl(
     private val authRepository: AuthRepository,
     private val navigation: SettingsNavigation,
     smartThingsRepository: SmartThingsRepository,
-    settingsRepository: SettingsRepository,
+    private val settingsRepository: SettingsRepository,
     userRepository: UserRepository
 ): SettingsMainViewModel() {
 
@@ -75,6 +82,7 @@ class SettingsMainViewModelImpl(
     private val resumeBus = MutableStateFlow(System.currentTimeMillis())
     private val updateSnackbarVisible = MutableStateFlow(false)
     private val contentCreatorMode = settingsRepository.contentCreatorModeEnabled
+    private val launchScreen = settingsRepository.launchScreen.asFlow()
 
     override val events = MutableSharedFlow<Event>()
 
@@ -105,13 +113,15 @@ class SettingsMainViewModelImpl(
 
     override val state = combine(
         options,
-        updateSnackbarVisible
-    ) { options, updateSnackbarVisible ->
+        updateSnackbarVisible,
+        launchScreen
+    ) { options, updateSnackbarVisible, launchScreen ->
         State.Loaded(
             options.moduleState,
             options.permissionsGranted,
             options.accountInfo,
-            updateSnackbarVisible
+            updateSnackbarVisible,
+            launchScreen
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
@@ -183,6 +193,20 @@ class SettingsMainViewModelImpl(
         }
     }
 
+    override fun onOpenMapClicked() {
+        viewModelScope.launch {
+            navigation.navigateWithContext { context ->
+                context.startActivity(Intent(context, TagActivity::class.java))
+            }
+        }
+    }
+
+    override fun onLaunchScreenChanged(screen: LaunchScreen) {
+        viewModelScope.launch {
+            settingsRepository.launchScreen.set(screen)
+        }
+    }
+
     override fun onSecurityClicked() {
         viewModelScope.launch {
             navigation.navigate(
@@ -192,11 +216,27 @@ class SettingsMainViewModelImpl(
         }
     }
 
+    override fun onFindCatalogClicked() {
+        viewModelScope.launch {
+            navigation.navigate(
+                SettingsMainFragmentDirections.actionSettingsMainFragmentToFindCatalogFragment()
+            )
+        }
+    }
+
     override fun onBackupRestoreClicked() {
         viewModelScope.launch {
             navigation.navigate(
                 SettingsMainFragmentDirections
                     .actionSettingsMainFragmentToBackupRestoreFragment()
+            )
+        }
+    }
+
+    override fun onPetWalkingClicked() {
+        viewModelScope.launch {
+            navigation.navigate(
+                SettingsMainFragmentDirections.actionSettingsMainFragmentToPetWalkFragment()
             )
         }
     }

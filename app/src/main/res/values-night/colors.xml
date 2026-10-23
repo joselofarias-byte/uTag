@@ -11,6 +11,7 @@
     <color name="licenses_toolbar">@color/sesl_action_bar_background_color_dark</color>
     <color name="oui_background_color">@color/sesl_background_color_dark</color>
     <color name="oui_surface_color">#323232</color>
+    <color name="widget_ring_text">#FFFFFF</color>
     <color name="oui_surface_color_variant">#4e4e4e</color>
     <color name="oui_dialog_color">@color/sesl_black</color>
     <color name="oui_accent_color">@color/sesl_primary_color_dark</color>

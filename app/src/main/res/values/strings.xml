@@ -106,6 +106,11 @@
     <string name="settings_main_location_content">Location update, search nearby options, widget refresh, unknown tags, network and safe areas</string>
     <string name="settings_main_map_title">Map</string>
     <string name="settings_main_map_content">Find and Location History map theming &amp; options</string>
+    <string name="settings_main_open_map_title">Open map</string>
+    <string name="settings_main_open_map_content">Show every tag on the map</string>
+    <string name="settings_main_launch_title">Open on launch</string>
+    <string name="settings_main_launch_map">Map</string>
+    <string name="settings_main_launch_settings">Settings</string>
     <string name="settings_main_security_title">Security &amp; Encryption</string>
     <string name="settings_main_security_content">Offline location encryption &amp; biometric entry</string>
     <string name="settings_main_updates_content_disabled">Update notifications are disabled in your system settings</string>
@@ -114,9 +119,13 @@
     <string name="settings_main_faq_content">Questions and answers about uTag</string>
     <string name="settings_main_wiki_title">View the Wiki</string>
     <string name="settings_main_wiki_content">Info &amp; guides on how to use uTag</string>
+    <string name="settings_main_find_catalog_title">Items and people (experimental)</string>
+    <string name="settings_main_find_catalog_content">List devices and people already returned by Find. Only SmartTags can be located.</string>
     <string name="settings_main_backup_restore_title">Backup &amp; Restore</string>
     <string name="settings_main_backup_restore_content">Backup &amp; restore uTag data to a local file or the cloud</string>
     <string name="settings_main_advanced_title">Advanced</string>
+    <string name="settings_main_pet_walk_title">Pet walking (experimental)</string>
+    <string name="settings_main_pet_walk_content">Record this phone and a SmartTag on a walk. This is not SmartThings pet walking.</string>
     <string name="settings_main_advanced_content">Language, content creator mode and analytics options</string>
     <string name="settings_main_category_account">Account</string>
     <string name="settings_main_category_samsung_account_title">Samsung Account</string>
@@ -231,6 +240,8 @@
     <string name="settings_map_style_normal">Default</string>
     <string name="settings_map_style_terrain">Terrain</string>
     <string name="settings_map_style_satellite">Satellite</string>
+    <string name="settings_map_style_osm">OpenStreetMap</string>
+    <string name="map_osm_attribution"><a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a></string>
     <string name="settings_map_theme_title">Map Theme</string>
     <string name="settings_map_theme_light">Light</string>
     <string name="settings_map_theme_dark">Dark</string>
@@ -410,6 +421,10 @@
     <string name="tag_location_history_info_content_item">Location %1d:\n\nLatitude: %1s\nLongitude: %1s\nTimestamp: %1s\nAccuracy: %1s\nSpeed: %1s\nRssi: %1s\nBattery: %1s\nMethod: %1s\nFind host: %1s\nNearby: %1s\nOn Demand: %1s\nConnected User ID: %1s\nConnected Device ID: %1s\nD2D Status: %1s\nWas Encrypted: %1s</string>
 
     <!-- More page -->
+    <string name="tag_more_custom_icon">Custom icon</string>
+    <string name="tag_more_custom_icon_content">Pick an image for this tag on the map and widgets</string>
+    <string name="tag_more_custom_icon_set">Using your image. Tap to choose another.</string>
+    <string name="tag_more_custom_icon_reset">Use Samsung\'s icon</string>
     <string name="tag_more_search_nearby">Search nearby</string>
     <string name="tag_more_search_nearby_disabled">Disable Passive Mode to use this option</string>
     <string name="tag_more_navigate">Navigate</string>
@@ -1008,6 +1023,19 @@
     <string name="widget_error_toast_encryption">Failed to decrypt one or more Tag locations, open uTag and enter your PIN to display them</string>
     <string name="widget_timestamp">Updated: %1s</string>
     <string name="widget_description">Display Tag locations on a map</string>
+    <string name="ring_widget_title">Ring tag</string>
+    <string name="ring_widget_description">Ring a chosen tag with one tap. Tap again to stop.</string>
+    <string name="ring_widget_pick_title">Tag to ring</string>
+    <string name="ring_widget_unset">Choose a tag</string>
+    <string name="ring_widget_ring">Ring</string>
+    <string name="ring_widget_stop">Stop</string>
+    <string name="ring_widget_started">Ringing</string>
+    <string name="ring_widget_stopped">Stopped</string>
+    <string name="ring_widget_stop_failed">Could not stop the ring. Tap again to retry. It will not start another ring.</string>
+    <string name="ring_widget_failed">Could not ring this tag. Open uTag near the tag and try again.</string>
+    <string name="ring_shortcut_title">Ring a tag</string>
+    <string name="ring_shortcut_short">Ring tag</string>
+    <string name="ring_shortcut_pinned">Ring %1$s</string>
     <string name="widget_history_description">Display a Tag\'s location history on a map</string>
     <string name="widget_dialog_not_setup_title">uTag not set up</string>
     <string name="widget_dialog_not_setup_content">Set up uTag first before adding a widget</string>
@@ -1154,6 +1182,49 @@
     <string name="updates_check_for_updates_title">Automatically Check for Updates</string>
     <string name="updates_check_for_updates_content">Automatically check for updates once a day and show a notification if any are available</string>
 
+    <!-- Experimental Find catalog: items and people from the existing device list -->
+    <string name="find_catalog_title">Items and people</string>
+    <string name="find_catalog_experimental_title">What this screen can and cannot do</string>
+    <string name="find_catalog_intro">Samsung Find has Devices, Items and People tabs. This version of uTag only calls the Find My Mobile list that the favourites screen already uses (GET /devices through the SmartThings plugin). SmartTags in that list can be located with the same tracker geolocation call as the map. Phones, watches, buds and people are shown only when that response includes them. Their live location, ringing and sharing are not requested: those calls are not in this app. The uTag author is building them in an unreleased rewrite, and the project wiki says the rest of the Find API is still undocumented.</string>
+    <string name="find_catalog_experimental_switch">Enable experimental device list</string>
+    <string name="find_catalog_experimental_summary">Off until you turn it on. Turning it on reads the account\'s existing Find device list. It does not add a Buds, Watch or person to the network.</string>
+    <string name="find_catalog_error_title">Could not read the list</string>
+    <string name="find_catalog_error">GET /devices failed. Check the connection and that you are signed in. Nothing was invented in its place.</string>
+    <string name="find_catalog_summary_title">From GET /devices</string>
+    <string name="find_catalog_counts">%1$d tags · %2$d FMM devices · %3$d people · %4$d other</string>
+    <string name="find_catalog_counts_summary">FMM devices are whatever this response calls a non-tag, often a phone. A watch only appears if Samsung put it in this list. People are the members array: a name, not a live location.</string>
+    <string name="find_catalog_refresh">Refresh SmartTag locations</string>
+    <string name="find_catalog_refresh_summary">Asks the existing tracker endpoint for %1$d tag(s). Other rows are left alone.</string>
+    <string name="find_catalog_refresh_none">There is no SmartTag id in this list, so no location request will be sent.</string>
+    <string name="find_catalog_refresh_running">Requesting tag locations…</string>
+    <string name="find_catalog_kind_tags">SmartTags</string>
+    <string name="find_catalog_kind_devices">Other FMM devices</string>
+    <string name="find_catalog_kind_accounts">Shared accounts</string>
+    <string name="find_catalog_kind_people">People</string>
+    <string name="find_catalog_kind_unknown">Unclassified</string>
+    <string name="find_catalog_unnamed_tag">SmartTag</string>
+    <string name="find_catalog_unnamed_device">Samsung device</string>
+    <string name="find_catalog_unnamed_account">Shared account</string>
+    <string name="find_catalog_unnamed_person">Person</string>
+    <string name="find_catalog_unnamed_unknown">Unknown device</string>
+    <string name="find_catalog_location_type">locationType %1$s</string>
+    <string name="find_catalog_can_locate">Location can be requested with the SmartTag endpoint.</string>
+    <string name="find_catalog_tag_missing_id">Marked as a tracker, but the response has no SmartThings device id, so location was not requested.</string>
+    <string name="find_catalog_person_only">Member of this Find install. The response has a name only. Live people sharing is not implemented.</string>
+    <string name="find_catalog_not_located">Listed from the device response. This build does not call a location endpoint for this kind of row.</string>
+    <string name="find_catalog_fmm_id">fmmDevId %1$s</string>
+    <string name="find_catalog_share">shareGeolocation %1$s</string>
+    <string name="find_catalog_agreement">mutualAgreement %1$s</string>
+    <string name="find_catalog_yes">yes</string>
+    <string name="find_catalog_no">no</string>
+    <string name="find_catalog_located">Last tag fix %1$.5f, %2$.5f at %3$s (%4$s)</string>
+    <string name="find_catalog_cached">cached</string>
+    <string name="find_catalog_live">from the network</string>
+    <string name="find_catalog_reason_none">The tag endpoint returned no location.</string>
+    <string name="find_catalog_reason_pin">The tag location is encrypted and needs the PIN.</string>
+    <string name="find_catalog_reason_denied">This account is not allowed to read that tag location.</string>
+    <string name="find_catalog_reason_error">The tag location request failed.</string>
+
     <!-- Debug notification -->
     <string name="debug_error_notification_title">uTag Error Caught</string>
     <string name="debug_error_notification_content">Tap to view &amp; save</string>
@@ -1162,5 +1233,69 @@
     <string name="debug_error_dialog_title">Error Details</string>
     <string name="debug_error_dialog_close">Close</string>
     <string name="debug_error_dialog_copy">Copy</string>
+
+    <!-- Pet walking (experimental, local recorder) -->
+    <string name="pet_walk_title">Pet walking</string>
+    <string name="pet_walk_experimental_title">Experimental local recorder</string>
+    <string name="pet_walk_intro">SmartThings pet walking uses the phone and the tag, then lets you mark events such as a toilet stop. That session API is not in this app. The only server call here is the one that turns the official mode off, because it blocks Find my Device. This screen records on the phone: GPS from this device, plus the tag\'s last Find location from the same request the map already uses, about every 30 seconds.</string>
+    <string name="pet_walk_experimental_switch">Enable experimental pet walking</string>
+    <string name="pet_walk_experimental_summary">Off until you turn it on. Nothing is uploaded as a pet walk, and the SmartThings pet-walking flag is left as it is.</string>
+    <string name="pet_walk_permission_title">Location permission</string>
+    <string name="pet_walk_permission">Allow location for uTag before starting a walk. The phone track comes from this device.</string>
+    <string name="pet_walk_record_category">Walk</string>
+    <string name="pet_walk_pick_tag">Tag</string>
+    <string name="pet_walk_pick_tag_none">Choose a tag</string>
+    <string name="pet_walk_no_tags">No SmartTags were returned. Sign in and check that a tag is on this account.</string>
+    <string name="pet_walk_already_recording">A walk is already open.</string>
+    <string name="pet_walk_server_flag_title">Official pet walking is on</string>
+    <string name="pet_walk_server_flag">SmartThings pet walking is still enabled for %1$s. Find my Device stays blocked for that tag until you turn the official mode off from the tag\'s Find my Device screen. This recorder does not change that setting.</string>
+    <string name="pet_walk_start">Start walk</string>
+    <string name="pet_walk_start_summary">Keeps a notification up and saves points on this phone until you stop.</string>
+    <string name="pet_walk_stop">Stop walk</string>
+    <string name="pet_walk_resume">Resume recording</string>
+    <string name="pet_walk_recording_running">Recording in the background. Stopping ends the walk.</string>
+    <string name="pet_walk_recording_paused">The recorder is not running. The walk stays open until you stop it or resume.</string>
+    <string name="pet_walk_active_title">Recording %1$s</string>
+    <string name="pet_walk_active_summary">Since %1$s\nPhone %2$s · tag %3$s\nTag fixes %4$d of %5$d samples</string>
+    <string name="pet_walk_event_toilet">Mark toilet</string>
+    <string name="pet_walk_event_interaction">Mark interaction</string>
+    <string name="pet_walk_event_note">Mark a note</string>
+    <string name="pet_walk_event_summary">Saves this phone\'s position and the tag\'s last fix with the mark.</string>
+    <string name="pet_walk_event_note_title">Note</string>
+    <string name="pet_walk_event_note_hint">What happened here</string>
+    <string name="pet_walk_event_saved_without_location">The mark was saved, but neither the phone nor the tag had a position.</string>
+    <string name="pet_walk_history">Walk history</string>
+    <string name="pet_walk_history_summary">Routes and events stored on this phone</string>
+    <string name="pet_walk_history_empty">No walks yet. A finished or in-progress walk will show up here.</string>
+    <string name="pet_walk_history_item_title">%1$s · %2$s</string>
+    <string name="pet_walk_history_item_summary">%1$s · phone %2$s · tag %3$s · %4$d events</string>
+    <string name="pet_walk_in_progress">In progress</string>
+    <string name="pet_walk_detail_title">Walk</string>
+    <string name="pet_walk_detail_loading">Loading walk…</string>
+    <string name="pet_walk_detail_missing">This walk is no longer on the phone.</string>
+    <string name="pet_walk_detail_tag">Tag: %1$s</string>
+    <string name="pet_walk_detail_started">Started %1$s</string>
+    <string name="pet_walk_detail_ended">Ended %1$s (%2$s)</string>
+    <string name="pet_walk_detail_distances">Phone %1$s · tag %2$s. The tag distance joins the fixes the network returned, including gaps.</string>
+    <string name="pet_walk_detail_samples">%1$d samples, %2$d with a tag fix. The blue line is the phone. The orange line is the tag.</string>
+    <string name="pet_walk_detail_limits">A tag cannot send its own GPS. A tag point exists only after some phone on the Find network has seen it. On a walk that is often this phone, so the tag track can lag behind or sit on top of the phone. This does not add lost-pet tracking beyond that network.</string>
+    <string name="pet_walk_detail_no_events">No events marked.</string>
+    <string name="pet_walk_detail_event">%1$s · %2$s\n%3$s</string>
+    <string name="pet_walk_detail_event_at">Phone or tag position %1$.5f, %2$.5f</string>
+    <string name="pet_walk_detail_event_no_position">No position was available for this mark.</string>
+    <string name="pet_walk_detail_last_tag">Last sample at %2$s: %1$s</string>
+    <string name="pet_walk_detail_delete">Delete walk</string>
+    <string name="pet_walk_detail_delete_confirm">Delete this walk from this phone? This does not change anything on Samsung\'s servers.</string>
+    <string name="pet_walk_status_located">Tag location received</string>
+    <string name="pet_walk_status_no_location">No tag location</string>
+    <string name="pet_walk_status_pin">Tag location needs the encryption PIN</string>
+    <string name="pet_walk_status_not_allowed">Tag location is not shared with this account</string>
+    <string name="pet_walk_status_error">Tag location request failed</string>
+    <string name="notification_channel_pet_walk_title">Pet walking</string>
+    <string name="notification_channel_pet_walk_content">Shown while an experimental pet walk is being recorded on this phone</string>
+    <string name="notification_pet_walk_title">Recording pet walk</string>
+    <string name="notification_pet_walk_starting">Starting…</string>
+    <string name="notification_pet_walk_content">%1$s · phone %2$s · tag fixes %3$d</string>
+    <string name="notification_pet_walk_stop">Stop</string>
 
 </resources>

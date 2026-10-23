@@ -17,6 +17,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.TileOverlay
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.StrokeStyle
 import com.google.android.gms.maps.model.StyleSpan
@@ -42,6 +43,10 @@ import com.kieronquinn.app.utag.utils.extensions.onClicked
 import com.kieronquinn.app.utag.utils.extensions.setDisplayedChildIfNeeded
 import com.kieronquinn.app.utag.utils.extensions.whenResumed
 import kotlinx.coroutines.flow.first
+import com.kieronquinn.app.utag.utils.maps.OsmTileProvider
+import com.kieronquinn.app.utag.utils.maps.applyUTagMapStyle
+import com.kieronquinn.app.utag.utils.maps.showOsmAttribution
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.time.LocalDate
@@ -49,6 +54,8 @@ import java.time.LocalDate
 class UnknownTagFragment: BoundFragment<FragmentUnknownTagBinding>(FragmentUnknownTagBinding::inflate), BackAvailable, LockCollapsed {
 
     private val args by navArgs<UnknownTagFragmentArgs>()
+    private val osmTiles by inject<OsmTileProvider>()
+    private var osmOverlay: TileOverlay? = null
     private var appliedMapTheme: MapTheme? = null
     private var appliedMapStyle: MapStyle? = null
 
@@ -265,7 +272,7 @@ class UnknownTagFragment: BoundFragment<FragmentUnknownTagBinding>(FragmentUnkno
     @Synchronized
     private fun GoogleMap.applyTheme(theme: MapTheme, style: MapStyle): Boolean? {
         return when(style) {
-            MapStyle.TERRAIN -> false //Light theme
+            MapStyle.TERRAIN, MapStyle.OSM -> false //Light theme
             MapStyle.SATELLITE -> true //Dark theme
             MapStyle.NORMAL -> {
                 val themeToApply = when(theme) {
@@ -288,8 +295,9 @@ class UnknownTagFragment: BoundFragment<FragmentUnknownTagBinding>(FragmentUnkno
 
     @Synchronized
     private fun GoogleMap.applyStyle(style: MapStyle) {
+        binding.mapOsmAttribution.showOsmAttribution(style == MapStyle.OSM)
         if(style == appliedMapStyle) return
-        mapType = style.style
+        osmOverlay = applyUTagMapStyle(style, osmOverlay, osmTiles)
         appliedMapStyle = style
     }
 

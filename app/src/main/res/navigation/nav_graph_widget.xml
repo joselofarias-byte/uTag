@@ -49,6 +49,25 @@
         app:popExitAnim="@anim/sesl_fragment_close_exit"
         app:popEnterAnim="@anim/sesl_fragment_close_enter" />
     <fragment
+        android:id="@+id/widgetRingFragment"
+        android:name="com.kieronquinn.app.utag.ui.screens.widget.ring.RingWidgetFragment"
+        android:label="@string/ring_widget_title">
+        <action
+            android:id="@+id/action_widgetRingFragment_to_widgetDevicePickerFragment"
+            app:destination="@id/widgetDevicePickerFragment"
+            app:enterAnim="@anim/sesl_fragment_open_enter"
+            app:exitAnim="@anim/sesl_fragment_open_exit"
+            app:popEnterAnim="@anim/sesl_fragment_close_enter"
+            app:popExitAnim="@anim/sesl_fragment_close_exit" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_widgetRingFragment"
+        app:destination="@id/widgetRingFragment"
+        app:enterAnim="@android:anim/fade_in"
+        app:exitAnim="@android:anim/fade_out"
+        app:popEnterAnim="@anim/sesl_fragment_close_enter"
+        app:popExitAnim="@anim/sesl_fragment_close_exit" />
+    <fragment
         android:id="@+id/widgetDevicePickerFragment"
         android:name="com.kieronquinn.app.utag.ui.screens.widget.picker.WidgetDevicePickerFragment"
         android:label=" ">

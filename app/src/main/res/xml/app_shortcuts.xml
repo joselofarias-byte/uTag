@@ -12,4 +12,16 @@
             android:action="com.kieronquinn.app.utag.FIND"
             android:targetClass="com.kieronquinn.app.utag.ui.activities.TagActivity" />
     </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutDisabledMessage="@string/ring_shortcut_title"
+        android:shortcutId="ring"
+        android:shortcutLongLabel="@string/ring_shortcut_title"
+        android:shortcutShortLabel="@string/ring_shortcut_short">
+        <intent
+            android:action="com.kieronquinn.app.utag.RING"
+            android:targetClass="com.kieronquinn.app.utag.ui.activities.RingShortcutActivity"
+            android:targetPackage="com.kieronquinn.app.utag" />
+    </shortcut>
 </shortcuts>

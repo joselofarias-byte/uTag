@@ -29,6 +29,7 @@ import com.kieronquinn.app.utag.components.navigation.WidgetContainerNavigation
 import com.kieronquinn.app.utag.components.navigation.WidgetContainerNavigationImpl
 import com.kieronquinn.app.utag.model.database.UTagDatabase
 import com.kieronquinn.app.utag.model.database.cache.CacheDatabase
+import com.kieronquinn.app.utag.model.database.petwalk.PetWalkDatabase
 import com.kieronquinn.app.utag.repositories.AnalyticsRepository
 import com.kieronquinn.app.utag.repositories.AnalyticsRepositoryImpl
 import com.kieronquinn.app.utag.repositories.ApiRepository
@@ -47,10 +48,13 @@ import com.kieronquinn.app.utag.repositories.ContentCreatorRepository
 import com.kieronquinn.app.utag.repositories.ContentCreatorRepositoryImpl
 import com.kieronquinn.app.utag.repositories.DeviceRepository
 import com.kieronquinn.app.utag.repositories.DeviceRepositoryImpl
+import com.kieronquinn.app.utag.repositories.TagIconRepository
 import com.kieronquinn.app.utag.repositories.DownloadRepository
 import com.kieronquinn.app.utag.repositories.DownloadRepositoryImpl
 import com.kieronquinn.app.utag.repositories.EncryptedSettingsRepository
 import com.kieronquinn.app.utag.repositories.EncryptedSettingsRepositoryImpl
+import com.kieronquinn.app.utag.repositories.FindCatalogRepository
+import com.kieronquinn.app.utag.repositories.FindCatalogRepositoryImpl
 import com.kieronquinn.app.utag.repositories.EncryptionRepository
 import com.kieronquinn.app.utag.repositories.EncryptionRepositoryImpl
 import com.kieronquinn.app.utag.repositories.FindMyDeviceRepository
@@ -71,8 +75,12 @@ import com.kieronquinn.app.utag.repositories.NotificationRepository
 import com.kieronquinn.app.utag.repositories.NotificationRepositoryImpl
 import com.kieronquinn.app.utag.repositories.PassiveModeRepository
 import com.kieronquinn.app.utag.repositories.PassiveModeRepositoryImpl
+import com.kieronquinn.app.utag.repositories.PetWalkRepository
+import com.kieronquinn.app.utag.repositories.PetWalkRepositoryImpl
 import com.kieronquinn.app.utag.repositories.QcServiceRepository
 import com.kieronquinn.app.utag.repositories.QcServiceRepositoryImpl
+import com.kieronquinn.app.utag.repositories.RingController
+import com.kieronquinn.app.utag.repositories.RingWidgetStore
 import com.kieronquinn.app.utag.repositories.RulesRepository
 import com.kieronquinn.app.utag.repositories.RulesRepositoryImpl
 import com.kieronquinn.app.utag.repositories.SafeAreaRepository
@@ -89,6 +97,7 @@ import com.kieronquinn.app.utag.repositories.SmartspacerRepository
 import com.kieronquinn.app.utag.repositories.SmartspacerRepositoryImpl
 import com.kieronquinn.app.utag.repositories.StaticMapRepository
 import com.kieronquinn.app.utag.repositories.StaticMapRepositoryImpl
+import com.kieronquinn.app.utag.utils.maps.OsmTileProvider
 import com.kieronquinn.app.utag.repositories.UTagServiceRepository
 import com.kieronquinn.app.utag.repositories.UTagServiceRepositoryImpl
 import com.kieronquinn.app.utag.repositories.UpdateRepository
@@ -130,6 +139,8 @@ import com.kieronquinn.app.utag.ui.screens.settings.contentcreator.SettingsConte
 import com.kieronquinn.app.utag.ui.screens.settings.contentcreator.SettingsContentCreatorViewModelImpl
 import com.kieronquinn.app.utag.ui.screens.settings.encryption.SettingsEncryptionViewModel
 import com.kieronquinn.app.utag.ui.screens.settings.encryption.SettingsEncryptionViewModelImpl
+import com.kieronquinn.app.utag.ui.screens.settings.findcatalog.FindCatalogViewModel
+import com.kieronquinn.app.utag.ui.screens.settings.findcatalog.FindCatalogViewModelImpl
 import com.kieronquinn.app.utag.ui.screens.settings.encryption.confirm.SettingsEncryptionConfirmPINViewModel
 import com.kieronquinn.app.utag.ui.screens.settings.encryption.confirm.SettingsEncryptionConfirmPINViewModelImpl
 import com.kieronquinn.app.utag.ui.screens.settings.encryption.pintimeout.PinTimeoutViewModel
@@ -150,6 +161,12 @@ import com.kieronquinn.app.utag.ui.screens.settings.main.SettingsMainViewModel
 import com.kieronquinn.app.utag.ui.screens.settings.main.SettingsMainViewModelImpl
 import com.kieronquinn.app.utag.ui.screens.settings.map.SettingsMapViewModel
 import com.kieronquinn.app.utag.ui.screens.settings.map.SettingsMapViewModelImpl
+import com.kieronquinn.app.utag.ui.screens.settings.petwalk.PetWalkViewModel
+import com.kieronquinn.app.utag.ui.screens.settings.petwalk.PetWalkViewModelImpl
+import com.kieronquinn.app.utag.ui.screens.settings.petwalk.detail.PetWalkDetailViewModel
+import com.kieronquinn.app.utag.ui.screens.settings.petwalk.detail.PetWalkDetailViewModelImpl
+import com.kieronquinn.app.utag.ui.screens.settings.petwalk.history.PetWalkHistoryViewModel
+import com.kieronquinn.app.utag.ui.screens.settings.petwalk.history.PetWalkHistoryViewModelImpl
 import com.kieronquinn.app.utag.ui.screens.settings.security.SettingsSecurityViewModel
 import com.kieronquinn.app.utag.ui.screens.settings.security.SettingsSecurityViewModelImpl
 import com.kieronquinn.app.utag.ui.screens.setup.account.SetupAccountViewModel
@@ -230,6 +247,8 @@ import com.kieronquinn.app.utag.ui.screens.widget.history.WidgetHistoryViewModel
 import com.kieronquinn.app.utag.ui.screens.widget.history.WidgetHistoryViewModelImpl
 import com.kieronquinn.app.utag.ui.screens.widget.location.WidgetLocationViewModel
 import com.kieronquinn.app.utag.ui.screens.widget.location.WidgetLocationViewModelImpl
+import com.kieronquinn.app.utag.ui.screens.widget.ring.RingWidgetViewModel
+import com.kieronquinn.app.utag.ui.screens.widget.ring.RingWidgetViewModelImpl
 import com.kieronquinn.app.utag.ui.screens.widget.picker.WidgetDevicePickerViewModel
 import com.kieronquinn.app.utag.ui.screens.widget.picker.WidgetDevicePickerViewModelImpl
 import com.kieronquinn.app.utag.utils.room.RoomEncryptionHelper
@@ -277,6 +296,7 @@ class Application: Application(), LifecycleEventObserver {
     private fun singles() = module {
         single<UTagDatabase> { UTagDatabase.getDatabase(get()) }
         single<CacheDatabase> { CacheDatabase.getDatabase(get()) }
+        single<PetWalkDatabase> { PetWalkDatabase.getDatabase(get()) }
         single<RootNavigation> { RootNavigationImpl() }
         single<SettingsNavigation> { SettingsNavigationImpl() }
         single<SetupNavigation> { SetupNavigationImpl() }
@@ -296,7 +316,8 @@ class Application: Application(), LifecycleEventObserver {
         single<SmartThingsRepository> { SmartThingsRepositoryImpl(get(), get()) }
         single<AuthRepository> { AuthRepositoryImpl(get(), get(), get(), get(), get(), get(), get()) }
         single<ApiRepository> { ApiRepositoryImpl(get(), get(), get(), get(), get(), get()) }
-        single<DeviceRepository> { DeviceRepositoryImpl(get(), get(), get(), get()) }
+        single { TagIconRepository(get()) }
+        single<DeviceRepository> { DeviceRepositoryImpl(get(), get(), get(), get(), get()) }
         single<LocationRepository> { LocationRepositoryImpl(get(), get()) }
         single<GeocoderRepository> {
             GeocoderRepositoryImpl(get(), get())
@@ -319,6 +340,8 @@ class Application: Application(), LifecycleEventObserver {
             )
         } bind RoomEncryptionFailedCallback::class
         single<SettingsRepository> { SettingsRepositoryImpl(get()) }
+        single { RingWidgetStore(get()) }
+        single { RingController(get(), get()) }
         single<LocationHistoryRepository> { LocationHistoryRepositoryImpl(get(), get(), get()) }
         single<EncryptionRepository> { EncryptionRepositoryImpl(get(), get()) }
         single<UpdateRepository> { UpdateRepositoryImpl(get(), get()) }
@@ -326,12 +349,17 @@ class Application: Application(), LifecycleEventObserver {
         single<UwbRepository> { UwbRepository.getImplementation(get()) }
         single<NotificationRepository> { NotificationRepositoryImpl(get(), get()) }
         single<FindMyDeviceRepository> { FindMyDeviceRepositoryImpl(get(), get(), get(), get()) }
+        single<PetWalkRepository> {
+            PetWalkRepositoryImpl(get<PetWalkDatabase>().petWalkDao(), get(), get())
+        }
+        single<FindCatalogRepository> { FindCatalogRepositoryImpl(get(), get()) }
         single<RulesRepository> { RulesRepositoryImpl(get(), get(), get()) }
         single<AutomationRepository> { AutomationRepositoryImpl(get(), get(), get(), get()) }
         single<SafeAreaRepository> {
             SafeAreaRepositoryImpl(get(), get(), get(), get())
         } bind RoomEncryptionFailedCallback::class
-        single<StaticMapRepository> { StaticMapRepositoryImpl(get(), get(), get()) }
+        single { OsmTileProvider(get(), BuildConfig.VERSION_NAME) }
+        single<StaticMapRepository> { StaticMapRepositoryImpl(get(), get(), get(), get()) }
         single<LeftBehindRepository> { LeftBehindRepositoryImpl(get(), get(), get()) }
         single<SmartspacerRepository> { SmartspacerRepositoryImpl(get()) }
         single<WidgetRepository>(createdAtStart = isMainProcess()) {
@@ -404,7 +432,7 @@ class Application: Application(), LifecycleEventObserver {
             TagLocationHistoryViewModelImpl(get(), params.get(), params.get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         viewModel<MoreMainViewModel> { deviceId ->
-            MoreMainViewModelImpl(get(), get(), get(), get(), deviceId.get(), get(), get(), get(), get(), get(), get(), get(), get())
+            MoreMainViewModelImpl(get(), get(), get(), get(), deviceId.get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         viewModel<LostModeGuideViewModel> { params -> LostModeGuideViewModelImpl(get(), params.get(), params.get()) }
         viewModel<LostModeSettingsViewModel> { params ->
@@ -435,6 +463,12 @@ class Application: Application(), LifecycleEventObserver {
         }
         viewModel<SettingsSecurityViewModel> { SettingsSecurityViewModelImpl(get(), get(), get(), get()) }
         viewModel<SettingsMapViewModel> { SettingsMapViewModelImpl(get(), get(), get()) }
+        viewModel<PetWalkViewModel> { PetWalkViewModelImpl(get(), get(), get(), get(), get()) }
+        viewModel<PetWalkHistoryViewModel> { PetWalkHistoryViewModelImpl(get(), get()) }
+        viewModel<PetWalkDetailViewModel> { params ->
+            PetWalkDetailViewModelImpl(params.get(), get(), get(), get())
+        }
+        viewModel<FindCatalogViewModel> { FindCatalogViewModelImpl(get(), get()) }
         viewModel<SettingsLocationViewModel> { SettingsLocationViewModelImpl(
             get(),
             get(),
@@ -493,6 +527,9 @@ class Application: Application(), LifecycleEventObserver {
         viewModel<LocationStalenessViewModel> { LocationStalenessViewModelImpl(get()) }
         viewModel<WidgetContainerViewModel> { type ->
             WidgetContainerViewModelImpl(get(), get(), type.get())
+        }
+        viewModel<RingWidgetViewModel> { params ->
+            RingWidgetViewModelImpl(get(), get(), get(), get(), get(), params.get(), params.get())
         }
         viewModel<WidgetLocationViewModel> { params ->
             WidgetLocationViewModelImpl(get(), get(), get(), get(), get(), params.get(), params.get())

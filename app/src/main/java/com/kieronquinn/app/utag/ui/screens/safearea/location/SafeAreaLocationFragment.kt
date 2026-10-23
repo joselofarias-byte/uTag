@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions.loadRawResourceStyle
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.TileOverlay
 import com.google.maps.android.SphericalUtil
 import com.kieronquinn.app.utag.R
 import com.kieronquinn.app.utag.databinding.FragmentSafeAreaLocationBinding
@@ -60,6 +61,11 @@ import com.kieronquinn.app.utag.utils.extensions.widthWithMargins
 import dev.oneuiproject.oneui.widget.Toast
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import com.kieronquinn.app.utag.utils.maps.OsmTileProvider
+import com.kieronquinn.app.utag.utils.maps.applyUTagMapStyle
+import com.kieronquinn.app.utag.utils.maps.offsetOsmAttribution
+import com.kieronquinn.app.utag.utils.maps.showOsmAttribution
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.lang.ref.WeakReference
@@ -81,6 +87,8 @@ class SafeAreaLocationFragment: BoundFragment<FragmentSafeAreaLocationBinding>(F
     private var mapCircle: Circle? = null
     private var mapMarkerHash: Int? = null
     private var mapCircleHash: Int? = null
+    private val osmTiles by inject<OsmTileProvider>()
+    private var osmOverlay: TileOverlay? = null
     private var appliedMapTheme: MapTheme? = null
     private var appliedMapStyle: MapStyle? = null
     private var map: WeakReference<GoogleMap>? = null
@@ -353,8 +361,9 @@ class SafeAreaLocationFragment: BoundFragment<FragmentSafeAreaLocationBinding>(F
 
     @Synchronized
     private fun GoogleMap.applyStyle(style: MapStyle) {
+        binding.mapOsmAttribution.showOsmAttribution(style == MapStyle.OSM)
         if(style == appliedMapStyle) return
-        mapType = style.style
+        osmOverlay = applyUTagMapStyle(style, osmOverlay, osmTiles)
         appliedMapStyle = style
     }
 
@@ -363,10 +372,12 @@ class SafeAreaLocationFragment: BoundFragment<FragmentSafeAreaLocationBinding>(F
             //Map is to the right of the card
             val leftInset = safeAreaLocationCard.root.widthWithMargins
             setPadding(leftInset, 0, 0, insets.bottom)
+            mapOsmAttribution.offsetOsmAttribution(leftInset, insets.bottom)
         }else{
             //Map is above the card
             val bottomInset = safeAreaLocationCard.root.height
             setPadding(0, 0, 0, bottomInset)
+            mapOsmAttribution.offsetOsmAttribution(0, bottomInset)
         }
     }
 
