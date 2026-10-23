@@ -1,5 +1,5 @@
 name: Source checks
-on: [push, pull_request]
+on: [pull_request, workflow_dispatch]
 permissions:
   contents: read
 concurrency:
@@ -28,6 +28,9 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+          log-accepted-android-sdk-licenses: false
       - uses: gradle/actions/setup-gradle@v4
       - name: Configure compile-only inputs
         run: |
