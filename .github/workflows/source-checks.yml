@@ -1,0 +1,38 @@
+name: Source checks
+on: [push, pull_request]
+permissions:
+  contents: read
+concurrency:
+  group: source-checks-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  core-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python scripts/check_mod_version.py
+      - run: python scripts/test_pet_core.py
+  android-compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Configure compile-only inputs
+        run: |
+          printf 'MAPS_API_KEY=compile-only-not-a-real-key\n' > secrets.properties
+          keytool -genkeypair -keystore "$RUNNER_TEMP/compile.jks" -storepass android -keypass android -alias compile -dname CN=Compile -keyalg RSA -validity 1
+          printf 'storeFile=%s/compile.jks\nstorePassword=android\nkeyAlias=compile\nkeyPassword=android\n' "$RUNNER_TEMP" > local.properties
+      - name: Compile only (does not package a usable APK)
+        run: bash gradlew :app:compileDebugKotlin :app:compileDebugJavaWithJavac -x fmm -x processDebugGoogleServices --console=plain

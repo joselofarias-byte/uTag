@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="pet_walk_export_gpx">Export GPX (phone and tag tracks)</string>
+  <string name="pet_walk_export_retry">Export interrupted. Please try exporting again.</string>
+  <string name="pet_walk_export_success">GPX saved</string>
+  <string name="pet_walk_export_failure">Could not save GPX</string>
+</resources>

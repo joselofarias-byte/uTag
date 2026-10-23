@@ -14,6 +14,8 @@ import com.kieronquinn.app.utag.model.petwalk.PetWalkSampleDraft
 import com.kieronquinn.app.utag.model.petwalk.PetWalkSummary
 import com.kieronquinn.app.utag.model.petwalk.TagSampleStatus
 import com.kieronquinn.app.utag.repositories.ApiRepository.GetLocationResult
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -189,8 +191,12 @@ class PetWalkRepositoryImpl(
     private suspend fun capturePhone(): GeoPoint? {
         val location = try {
             withTimeoutOrNull(PHONE_LOCATION_TIMEOUT_MS) {
-                contentCreatorRepository.wrapLocationAsFlow(force = false).filterNotNull().first()
+                contentCreatorRepository.wrapLocationAsFlow(force = true).filterNotNull().filter {
+                    !it.isMock && PetWalkGeometry.isFreshPhone(it.toGeoPoint(), System.currentTimeMillis())
+                }.first()
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             null
         }
@@ -200,6 +206,8 @@ class PetWalkRepositoryImpl(
     private suspend fun captureTag(deviceId: String): Pair<GeoPoint?, TagSampleStatus> {
         val result = try {
             contentCreatorRepository.getLocation(deviceId) ?: apiRepository.getLocation(deviceId)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             return Pair(null, TagSampleStatus.ERROR)
         }
@@ -243,7 +251,7 @@ class PetWalkRepositoryImpl(
             latitude = latitude,
             longitude = longitude,
             accuracyMetres = if (hasAccuracy()) accuracy.toDouble() else null,
-            capturedAt = time.takeIf { it > 0L } ?: System.currentTimeMillis()
+            capturedAt = time
         )
     }
 
