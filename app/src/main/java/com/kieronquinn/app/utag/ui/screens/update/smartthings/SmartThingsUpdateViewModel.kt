@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kieronquinn.app.utag.R
+import com.kieronquinn.app.utag.model.ModVersionPolicy
 import com.kieronquinn.app.utag.components.navigation.SettingsNavigation
 import com.kieronquinn.app.utag.networking.model.github.ModRelease
 import com.kieronquinn.app.utag.repositories.DownloadRepository
@@ -17,6 +18,7 @@ import com.kieronquinn.app.utag.repositories.SmartThingsRepository.ModuleState
 import com.kieronquinn.app.utag.repositories.UpdateRepository.Companion.CONTENT_TYPE_APK
 import com.kieronquinn.app.utag.utils.extensions.broadcastReceiverAsFlow
 import com.kieronquinn.app.utag.xposed.Xposed
+import com.kieronquinn.app.utag.xposed.core.BuildConfig as XposedBuildConfig
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -106,7 +108,8 @@ class SmartThingsUpdateViewModelImpl(
             else -> null
         }
         when {
-            moduleVersionCode != null && moduleVersionCode == release.versionCode -> {
+            ModVersionPolicy.isUpToDate(moduleVersionCode, XposedBuildConfig.XPOSED_CODE) ||
+                (moduleVersionCode != null && moduleVersionCode == release.versionCode) -> {
                 if(hooksReady) {
                     State.Complete
                 }else{

@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kieronquinn.app.utag.R
 import com.kieronquinn.app.utag.components.navigation.SettingsNavigation
+import com.kieronquinn.app.utag.model.ModVersionPolicy
 import com.kieronquinn.app.utag.repositories.SmartThingsRepository
 import com.kieronquinn.app.utag.repositories.SmartThingsRepository.ModuleState
 import com.kieronquinn.app.utag.repositories.UpdateRepository
+import com.kieronquinn.app.utag.xposed.core.BuildConfig as XposedBuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -65,8 +67,13 @@ class SettingsContainerViewModelImpl(
             is ModuleState.Newer -> module.versionCode
             else -> null
         }
-        val smartThingsUpdate = smartThings?.takeUnless {
-            smartThingsVersionCode == it.versionCode || module?.wasInstalledOnPlay == true
+        val smartThingsUpdate = smartThings?.takeIf {
+            ModVersionPolicy.shouldOfferModUpdate(
+                installedVersionCode = smartThingsVersionCode,
+                expectedVersionCode = XposedBuildConfig.XPOSED_CODE,
+                remoteVersionCode = it.versionCode,
+                wasInstalledOnPlay = module?.wasInstalledOnPlay == true
+            )
         }
         val show = canShow && (uTag != null || smartThingsUpdate != null) && !hasDismissed
         val multiple = smartThingsUpdate != null && uTag != null

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kieronquinn.app.utag.BuildConfig
 import com.kieronquinn.app.utag.components.navigation.SettingsNavigation
+import com.kieronquinn.app.utag.model.ModVersionPolicy
 import com.kieronquinn.app.utag.model.Release
 import com.kieronquinn.app.utag.networking.model.github.ModRelease
 import com.kieronquinn.app.utag.repositories.AuthRepository
@@ -17,6 +18,7 @@ import com.kieronquinn.app.utag.repositories.SettingsRepository
 import com.kieronquinn.app.utag.repositories.SmartThingsRepository
 import com.kieronquinn.app.utag.repositories.SmartThingsRepository.ModuleState
 import com.kieronquinn.app.utag.repositories.UpdateRepository
+import com.kieronquinn.app.utag.xposed.core.BuildConfig as XposedBuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -144,7 +146,14 @@ class UpdatesViewModelImpl(
             BuildConfig.TAG_NAME,
             utag, //Updates repository already checks tag
             smartThingsVersionName,
-            smartthings?.takeUnless { it.versionCode == smartThingsVersionCode },
+            smartthings?.takeIf {
+                ModVersionPolicy.shouldOfferModUpdate(
+                    installedVersionCode = smartThingsVersionCode,
+                    expectedVersionCode = XposedBuildConfig.XPOSED_CODE,
+                    remoteVersionCode = it.versionCode,
+                    wasInstalledOnPlay = module?.wasInstalledOnPlay == true
+                )
+            },
             smartThingsState,
             updatesAvailable,
             updatesEnabled,
