@@ -15,6 +15,7 @@ import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import com.kieronquinn.app.utag.BuildConfig
 import com.kieronquinn.app.utag.R
+import com.kieronquinn.app.utag.model.ModVersionPolicy
 import com.kieronquinn.app.utag.repositories.NotificationRepository
 import com.kieronquinn.app.utag.repositories.NotificationRepository.NotificationChannel
 import com.kieronquinn.app.utag.repositories.NotificationRepository.NotificationId
@@ -23,6 +24,7 @@ import com.kieronquinn.app.utag.repositories.SmartThingsRepository
 import com.kieronquinn.app.utag.repositories.SmartThingsRepository.ModuleState
 import com.kieronquinn.app.utag.repositories.UpdateRepository
 import com.kieronquinn.app.utag.ui.activities.MainActivity
+import com.kieronquinn.app.utag.xposed.core.BuildConfig as XposedBuildConfig
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.time.Duration
@@ -88,7 +90,12 @@ class UpdateWorker(
         }
         val modUpdate = if(smartThingsVersion!= null) {
             updateRepository.getModRelease()?.takeIf {
-                it.versionCode != smartThingsVersion.first
+                ModVersionPolicy.shouldOfferModUpdate(
+                    installedVersionCode = smartThingsVersion.first,
+                    expectedVersionCode = XposedBuildConfig.XPOSED_CODE,
+                    remoteVersionCode = it.versionCode,
+                    wasInstalledOnPlay = false
+                )
             }
         }else null
         if(update == null && modUpdate == null) return //No updates available
