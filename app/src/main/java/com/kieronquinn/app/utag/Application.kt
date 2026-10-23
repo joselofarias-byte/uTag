@@ -73,6 +73,8 @@ import com.kieronquinn.app.utag.repositories.PassiveModeRepository
 import com.kieronquinn.app.utag.repositories.PassiveModeRepositoryImpl
 import com.kieronquinn.app.utag.repositories.QcServiceRepository
 import com.kieronquinn.app.utag.repositories.QcServiceRepositoryImpl
+import com.kieronquinn.app.utag.repositories.RingController
+import com.kieronquinn.app.utag.repositories.RingWidgetStore
 import com.kieronquinn.app.utag.repositories.RulesRepository
 import com.kieronquinn.app.utag.repositories.RulesRepositoryImpl
 import com.kieronquinn.app.utag.repositories.SafeAreaRepository
@@ -230,6 +232,8 @@ import com.kieronquinn.app.utag.ui.screens.widget.history.WidgetHistoryViewModel
 import com.kieronquinn.app.utag.ui.screens.widget.history.WidgetHistoryViewModelImpl
 import com.kieronquinn.app.utag.ui.screens.widget.location.WidgetLocationViewModel
 import com.kieronquinn.app.utag.ui.screens.widget.location.WidgetLocationViewModelImpl
+import com.kieronquinn.app.utag.ui.screens.widget.ring.RingWidgetViewModel
+import com.kieronquinn.app.utag.ui.screens.widget.ring.RingWidgetViewModelImpl
 import com.kieronquinn.app.utag.ui.screens.widget.picker.WidgetDevicePickerViewModel
 import com.kieronquinn.app.utag.ui.screens.widget.picker.WidgetDevicePickerViewModelImpl
 import com.kieronquinn.app.utag.utils.room.RoomEncryptionHelper
@@ -319,6 +323,8 @@ class Application: Application(), LifecycleEventObserver {
             )
         } bind RoomEncryptionFailedCallback::class
         single<SettingsRepository> { SettingsRepositoryImpl(get()) }
+        single { RingWidgetStore(get()) }
+        single { RingController(get(), get()) }
         single<LocationHistoryRepository> { LocationHistoryRepositoryImpl(get(), get(), get()) }
         single<EncryptionRepository> { EncryptionRepositoryImpl(get(), get()) }
         single<UpdateRepository> { UpdateRepositoryImpl(get(), get()) }
@@ -493,6 +499,9 @@ class Application: Application(), LifecycleEventObserver {
         viewModel<LocationStalenessViewModel> { LocationStalenessViewModelImpl(get()) }
         viewModel<WidgetContainerViewModel> { type ->
             WidgetContainerViewModelImpl(get(), get(), type.get())
+        }
+        viewModel<RingWidgetViewModel> { params ->
+            RingWidgetViewModelImpl(get(), get(), get(), get(), get(), params.get(), params.get())
         }
         viewModel<WidgetLocationViewModel> { params ->
             WidgetLocationViewModelImpl(get(), get(), get(), get(), get(), params.get(), params.get())
