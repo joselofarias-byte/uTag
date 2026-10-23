@@ -41,6 +41,7 @@ abstract class SettingsMainViewModel: ViewModel() {
     abstract fun onMapClicked()
     abstract fun onSecurityClicked()
     abstract fun onBackupRestoreClicked()
+    abstract fun onPetWalkingClicked()
     abstract fun onFaqClicked()
     abstract fun onWikiClicked()
 
@@ -197,6 +198,14 @@ class SettingsMainViewModelImpl(
             navigation.navigate(
                 SettingsMainFragmentDirections
                     .actionSettingsMainFragmentToBackupRestoreFragment()
+            )
+        }
+    }
+
+    override fun onPetWalkingClicked() {
+        viewModelScope.launch {
+            navigation.navigate(
+                SettingsMainFragmentDirections.actionSettingsMainFragmentToPetWalkFragment()
             )
         }
     }

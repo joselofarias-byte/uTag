@@ -99,6 +99,13 @@ interface SettingsRepository: BaseSettingsRepository {
     val hasSeenFindMyDeviceWarning: UTagSetting<Boolean>
 
     /**
+     *  Local pet-walk recorder. Off until the user opts in. This does not enable SmartThings'
+     *  pet walking flag, which blocks Find my Device.
+     */
+    @IgnoreInBackup
+    val petWalkingExperimentalEnabled: UTagSetting<Boolean>
+
+    /**
      *  Whether the user has seen the Automation shared tag warning, which is only displayed once.
      */
     @IgnoreInBackup
@@ -193,6 +200,9 @@ class SettingsRepositoryImpl(context: Context): BaseSettingsRepositoryImpl(), Se
         private const val KEY_HAS_SEEN_FIND_MY_DEVICE_WARNING = "has_seen_find_my_device_warning"
         private const val DEFAULT_HAS_SEEN_FIND_MY_DEVICE_WARNING = false
 
+        private const val KEY_PET_WALKING_EXPERIMENTAL = "pet_walking_experimental"
+        private const val DEFAULT_PET_WALKING_EXPERIMENTAL = false
+
         private const val KEY_HAS_SEEN_AUTOMATION_WARNING = "has_seen_automation_warning"
         private const val DEFAULT_HAS_SEEN_AUTOMATION_WARNING = false
 
@@ -255,6 +265,11 @@ class SettingsRepositoryImpl(context: Context): BaseSettingsRepositoryImpl(), Se
     override val hasSeenFindMyDeviceWarning = boolean(
         KEY_HAS_SEEN_FIND_MY_DEVICE_WARNING,
         DEFAULT_HAS_SEEN_FIND_MY_DEVICE_WARNING
+    )
+
+    override val petWalkingExperimentalEnabled = boolean(
+        KEY_PET_WALKING_EXPERIMENTAL,
+        DEFAULT_PET_WALKING_EXPERIMENTAL
     )
 
     override val hasSeenAutomationWarning = boolean(

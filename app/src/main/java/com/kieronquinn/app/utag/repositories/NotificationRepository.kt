@@ -134,6 +134,13 @@ interface NotificationRepository {
             options = {
                 enableVibration(true)
             }
+        ),
+        PET_WALK(
+            "pet_walk",
+            NotificationManager.IMPORTANCE_LOW,
+            R.string.notification_channel_pet_walk_title,
+            R.string.notification_channel_pet_walk_content,
+            options = { setShowBadge(false) }
         );
 
         fun isEnabled(context: Context): Boolean {
@@ -157,7 +164,8 @@ interface NotificationRepository {
         LEFT_BEHIND_PREFIX,
         UNKNOWN_TAG,
         LOGGED_OUT,
-        DEBUG
+        DEBUG,
+        PET_WALK
     }
 
     enum class PendingIntentId {
@@ -175,7 +183,9 @@ interface NotificationRepository {
         WIDGET_REFRESH_PREFIX,
         WIDGET_CLICK_PREFIX,
         WIDGET_ERROR_CLICK_PREFIX,
-        UNKNOWN_TAG
+        UNKNOWN_TAG,
+        PET_WALK,
+        PET_WALK_STOP
     }
 
 }

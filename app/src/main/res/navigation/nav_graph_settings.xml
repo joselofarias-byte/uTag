@@ -44,6 +44,13 @@
             app:popEnterAnim="@anim/sesl_fragment_close_enter"
             app:popExitAnim="@anim/sesl_fragment_close_exit" />
         <action
+            android:id="@+id/action_settingsMainFragment_to_petWalkFragment"
+            app:destination="@id/petWalkFragment"
+            app:enterAnim="@anim/sesl_fragment_open_enter"
+            app:exitAnim="@anim/sesl_fragment_open_exit"
+            app:popEnterAnim="@anim/sesl_fragment_close_enter"
+            app:popExitAnim="@anim/sesl_fragment_close_exit" />
+        <action
             android:id="@+id/action_settingsMainFragment_to_settingsFaqFragment"
             app:destination="@id/settingsFaqFragment"
             app:enterAnim="@anim/sesl_fragment_open_enter"
@@ -380,6 +387,38 @@
         android:id="@+id/settingsFaqFragment"
         android:name="com.kieronquinn.app.utag.ui.screens.settings.faq.SettingsFaqFragment"
         android:label="@string/settings_main_faq_title" />
+    <fragment
+        android:id="@+id/petWalkFragment"
+        android:name="com.kieronquinn.app.utag.ui.screens.settings.petwalk.PetWalkFragment"
+        android:label="@string/pet_walk_title">
+        <action
+            android:id="@+id/action_petWalkFragment_to_petWalkHistoryFragment"
+            app:destination="@id/petWalkHistoryFragment"
+            app:enterAnim="@anim/sesl_fragment_open_enter"
+            app:exitAnim="@anim/sesl_fragment_open_exit"
+            app:popEnterAnim="@anim/sesl_fragment_close_enter"
+            app:popExitAnim="@anim/sesl_fragment_close_exit" />
+    </fragment>
+    <fragment
+        android:id="@+id/petWalkHistoryFragment"
+        android:name="com.kieronquinn.app.utag.ui.screens.settings.petwalk.history.PetWalkHistoryFragment"
+        android:label="@string/pet_walk_history">
+        <action
+            android:id="@+id/action_petWalkHistoryFragment_to_petWalkDetailFragment"
+            app:destination="@id/petWalkDetailFragment"
+            app:enterAnim="@anim/sesl_fragment_open_enter"
+            app:exitAnim="@anim/sesl_fragment_open_exit"
+            app:popEnterAnim="@anim/sesl_fragment_close_enter"
+            app:popExitAnim="@anim/sesl_fragment_close_exit" />
+    </fragment>
+    <fragment
+        android:id="@+id/petWalkDetailFragment"
+        android:name="com.kieronquinn.app.utag.ui.screens.settings.petwalk.detail.PetWalkDetailFragment"
+        android:label="@string/pet_walk_detail_title">
+        <argument
+            android:name="walkId"
+            app:argType="long" />
+    </fragment>
     <fragment
         android:id="@+id/settingsLanguageFragment"
         android:name="com.kieronquinn.app.utag.ui.screens.settings.advanced.language.SettingsLanguageFragment"
