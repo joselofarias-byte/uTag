@@ -28,12 +28,35 @@
                 android:text="@string/settings_uts_tag_content"
                 android:textColor="?android:textColorPrimary" />
 
-            <fragment
-                android:id="@+id/unknown_tag_map"
-                class="com.google.android.gms.maps.SupportMapFragment"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:layout_marginTop="@dimen/margin_16" />
+                android:layout_marginTop="@dimen/margin_16">
+
+                <fragment
+                    android:id="@+id/unknown_tag_map"
+                    class="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/map_osm_attribution"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    android:layout_margin="8dp"
+                    android:background="#CCFFFFFF"
+                    android:elevation="12dp"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="3dp"
+                    android:textColor="#FF333333"
+                    android:textColorLink="#FF1A73E8"
+                    android:textSize="11sp"
+                    android:visibility="gone"
+                    tools:text="© OpenStreetMap contributors"
+                    tools:visibility="visible" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -94,6 +94,7 @@ import com.kieronquinn.app.utag.repositories.SmartspacerRepository
 import com.kieronquinn.app.utag.repositories.SmartspacerRepositoryImpl
 import com.kieronquinn.app.utag.repositories.StaticMapRepository
 import com.kieronquinn.app.utag.repositories.StaticMapRepositoryImpl
+import com.kieronquinn.app.utag.utils.maps.OsmTileProvider
 import com.kieronquinn.app.utag.repositories.UTagServiceRepository
 import com.kieronquinn.app.utag.repositories.UTagServiceRepositoryImpl
 import com.kieronquinn.app.utag.repositories.UpdateRepository
@@ -349,7 +350,8 @@ class Application: Application(), LifecycleEventObserver {
         single<SafeAreaRepository> {
             SafeAreaRepositoryImpl(get(), get(), get(), get())
         } bind RoomEncryptionFailedCallback::class
-        single<StaticMapRepository> { StaticMapRepositoryImpl(get(), get(), get()) }
+        single { OsmTileProvider(get(), BuildConfig.VERSION_NAME) }
+        single<StaticMapRepository> { StaticMapRepositoryImpl(get(), get(), get(), get()) }
         single<LeftBehindRepository> { LeftBehindRepositoryImpl(get(), get(), get()) }
         single<SmartspacerRepository> { SmartspacerRepositoryImpl(get()) }
         single<WidgetRepository>(createdAtStart = isMainProcess()) {

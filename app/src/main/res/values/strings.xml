@@ -240,6 +240,8 @@
     <string name="settings_map_style_normal">Default</string>
     <string name="settings_map_style_terrain">Terrain</string>
     <string name="settings_map_style_satellite">Satellite</string>
+    <string name="settings_map_style_osm">OpenStreetMap</string>
+    <string name="map_osm_attribution"><a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a></string>
     <string name="settings_map_theme_title">Map Theme</string>
     <string name="settings_map_theme_light">Light</string>
     <string name="settings_map_theme_dark">Dark</string>
